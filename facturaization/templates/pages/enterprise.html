@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-home"></i></a></li>
-        <li class="active">Clients</li>
+        <li class="active">Enterprise</li>
     </ol>
 
     <div class="filter-section clearfix">
@@ -20,7 +20,6 @@
                     Actions <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="#"><i class="fa fa-envelope"></i>Add Society</a></li>
                     <li><a href="#"><i class="fa fa-envelope"></i> Send Email</a></li>
                     <li><a href="#"><i class="fa fa-trash"></i> Delete</a></li>
                     <li><a href="#"><i class="fa fa-ban"></i> Deactivate</a></li>
@@ -37,9 +36,9 @@
                 <input type="text" class="form-control" placeholder="Filter">
             </div>
                 <button class="btn btn-success"><i class="fa fa-upload"></i> Import</button>
-                <!-- <button class="btn btn-primary"><i class="fa fa-plus"></i> New Client</button> -->
-                <a href="addClient" class="btn btn-primary">
-                    <i class="fa fa-plus"></i> New Client
+                
+                <a href="addEnterprise" class="btn btn-primary">
+                    <i class="fa fa-plus"></i> Add Enterprise
                 </a>
         </div>
     </div>
@@ -49,25 +48,35 @@
             <thead>
                 <tr>
                     <th><input type="checkbox"></th>
-                    <th>NAME <i class="fa fa-sort"></i></th>
-                    <th>CONTACT EMAIL <i class="fa fa-sort"></i></th>
-                    <th>ID NUMBER <i class="fa fa-sort"></i></th>
-                    <th>BALANCE <i class="fa fa-sort"></i></th>
-                    <th>Adress<i class="fa fa-sort"></i></th>
-                    <th>DATE CREATED <i class="fa fa-sort"></i></th>
-                    <th>Notes<i class="fa fa-sort"></i></th>
+                    <th>Customer Name<i class="fa fa-sort"></i></th>
+                    <th>Customer Email<i class="fa fa-sort"></i></th>
+                    <th>Enterprise Name <i class="fa fa-sort"></i></th>
+                    <th>Enterprise Address><i class="fa fa-sort"></i></th>
+                    <th>Enterprise City><i class="fa fa-sort"></i></th>
+                    <th>Enterprise Postal Code<i class="fa fa-sort"></i></th>
+                    <th>Enterprise Siret No<i class="fa fa-sort "></i></th> 
+                    <th>Actions <i class="fa fa-sort"></i></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><input type="checkbox"></td>
-                    <td>xyz</td>
-                    <td></td>
-                    <td></td>
-                    <td>1900,00 €</td>
-                    <td>5 alle de l'orangrie 95600 eaubonne</td>
-                    <td>21/Dec/2024</td>
-                    <td>here we can show extra information if customer have</td>
+                    <td>Karam</td>
+                    <td>Email</td>
+                    <td>Revotech</td>
+                    <td>Address</td>
+                    <td>City</td>
+                    <td>Postal Code</td>
+                    <td>Siret No</td>
+                    <td>
+                        <a href="editClient" class="btn btn-success">
+                            <i class="fa fa-pencil"></i> Edit
+                        </a>
+                        <a href="Delete" class="btn btn-primary">
+                        <i class="fa fa-trash"></i> Delete
+                        </a>
+                    </td>
+                    
                 </tr>
             </tbody>
         </table>

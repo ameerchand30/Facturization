@@ -1,0 +1,30 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Client page{% endblock %}
+
+    {% block extra_css %}
+       
+    {% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Breadcrumb -->
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-home"></i></a></li>
+            <li><a href="#">Enterpirse</a></li>
+            <li class="active">Add Enterpirse</li>
+        </ol>
+<!-- Form Actions -->
+        <div class="form-actions">
+            <div class="text-right">
+                <button type="button" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="scrollable-container">
+                {% include "components/cards/addEnterprise.html" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

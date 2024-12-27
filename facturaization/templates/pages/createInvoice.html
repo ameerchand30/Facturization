@@ -1,0 +1,187 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Client page{% endblock %}
+
+    {% block extra_css %}
+       
+        <style>
+            .panel { margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+            .form-group { margin-bottom: 15px; }
+            .table>tbody>tr>td { vertical-align: middle; }
+            .line-total { min-width: 120px; }
+            .item-row:hover .delete-row { visibility: visible; }
+            .delete-row { visibility: hidden; }
+            .add-item { margin-top: 10px; }
+          </style>
+    {% endblock %}
+
+{% block content %}
+
+         <!-- Form Actions -->
+         <div class="form-actions">
+            <div class="text-right">
+                <button type="button" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+<div class="container">
+    <div class="scrollable-container">
+        <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                <label>Client</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" value="karam">
+                    <span class="input-group-addon">
+                    <i class="fa fa-times"></i>
+                    </span>
+                </div>
+                <div class="help-block">
+                    <a href="#"><i class="fa fa-pencil"></i> Edit Client</a> /
+                    <a href="#"><i class="fa fa-eye"></i> View Client</a>
+                </div>
+                <div class="checkbox">
+                    <label>
+                    <input type="checkbox" checked> karam
+                    </label>
+                    <div><a href="#">View in Portal</a></div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                <label>Invoice Date</label>
+                <input type="date" class="form-control" value="2024-12-26">
+                </div>
+                <div class="form-group">
+                <label>Due Date</label>
+                <input type="date" class="form-control">
+                </div>
+                <div class="form-group">
+                <label>Partial/Deposit</label>
+                <input type="text" class="form-control">
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                <label>Invoice #</label>
+                <input type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                <label>PO #</label>
+                <input type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                <label>Discount</label>
+                <div class="row">
+                    <div class="col-xs-6">
+                    <input type="number" class="form-control">
+                    </div>
+                    <div class="col-xs-6">
+                    <select class="form-control">
+                        <option>Amount</option>
+                        <option>Percent</option>
+                    </select>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div> <!-- /.row -->
+
+        <ul class="nav nav-tabs">
+        <li class=""><a href="product">Products</a></li>
+        </ul>
+        <table class="table table-hover">
+        <thead>
+            <tr>
+            <th width="40"></th>
+            <th>ITEM</th>
+            <th>DESCRIPTION</th>
+            <th>UNIT COST</th>
+            <th>QUANTITY</th>
+            <th>LINE TOTAL</th>
+            <th width="40"></th>
+            </tr>
+        </thead>
+        <tbody style="background-color: rgb(237, 237, 237);">
+            <tr class="item-row">
+            <td><i class="fa fa-bars"></i></td>
+            <td>
+                <div class="input-group">
+                <input type="text" class="form-control" placeholder="Filter">
+                <span class="input-group-addon">
+                    <i class="fa fa-times"></i>
+                </span>
+                </div>
+            </td>
+            <td><textarea class="form-control" rows="3"></textarea></td>
+            <td><input type="number" class="form-control" value="100"></td>
+            <td><input type="number" class="form-control" value="100"></td>
+            <td class="line-total">10,000.00 €</td>
+            <td><button class="btn btn-link delete-row"><i class="fa fa-trash"></i></button></td>
+            </tr>
+        </tbody>
+        </table>
+        <button type="button" class="btn btn-default add-item">
+        <i class="fa fa-plus"></i> Add Item
+        </button>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+
+ <script>
+  $(document).ready(function() {
+  
+    $(document).ready(function() {
+          $('.add-item').click(function() {
+          console.log('clicked');
+            var $item = $('.item-row').first().clone();
+            $item.find('input, textarea').val('');
+            $item.appendTo('.table tbody');
+          });
+      // Calculate and update line totals
+      calculateLineTotals(); 
+    });
+
+    // Function to calculate and update line totals
+    function calculateLineTotals() {
+      $('.item-row').each(function() {
+        var unitCost = parseFloat($(this).find('input[type="number"]:eq(0)').val()) || 0; // Get unit cost
+        var quantity = parseFloat($(this).find('input[type="number"]:eq(1)').val()) || 0; // Get quantity
+        var lineTotal = unitCost * quantity;
+        $(this).find('.line-total').text(lineTotal.toFixed(2) + ' €'); // Update line total
+      });
+    }
+
+    // Handle delete button clicks
+    $(document).on('click', '.delete-row', function() {
+      $(this).closest('tr').remove();
+      calculateLineTotals(); // Recalculate line totals after deletion
+    });
+
+    // Calculate line totals on page load
+    calculateLineTotals();
+
+    // Handle input changes to recalculate line totals
+    $(document).on('input', '.item-row input[type="number"]', function() {
+      calculateLineTotals();
+    });
+  });
+</script> 
+{% endblock %}
