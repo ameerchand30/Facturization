@@ -1,0 +1,63 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Client page{% endblock %}
+
+    {% block extra_css %}
+        
+    {% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <!-- Breadcrumb -->
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-home"></i></a></li>
+            <li><a href="#">Clients</a></li>
+            <li class="active">New Client</li>
+        </ol>
+         <!-- Form Actions -->
+         <div class="form-actions">
+            <div class="text-right">
+                <button type="button" class="btn btn-default">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+
+        <div class="main-container">
+            <div class="scrollable-container">
+                <form>
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <!-- Company Details Card -->
+                            {% include "components/cards/companyCard.html" %}
+
+                            <!-- Address Card -->
+                            {% include "components/cards/address.html" %}
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <!-- Contacts Card -->
+                            {% include "components/cards/contact.html" %}
+
+                            <!-- Additional Info Card -->
+                            <div class="card">
+                                <h3 class="card-title text-primary">Additional Info</h3>
+                                <div class="card-body">
+                                    <!-- ... additional info form content ... -->
+                                    <div class="form-group">
+                                        <label>Notes</label>
+                                        <textarea class="form-control"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+       
+    </div>
+{% endblock %}
+

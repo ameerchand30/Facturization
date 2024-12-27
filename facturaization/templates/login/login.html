@@ -1,0 +1,34 @@
+
+{% extends "login/base.html" %}
+
+{% block title %}Invoice Chand Login{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Invoice Chand</h2>
+                </div>
+                <div class="card-body">
+                    <form action="/owners/login" method="post">
+                        <div class="form-group">
+                            <label for="email">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        <a href="#" class="btn btn-link">Forgot your password?</a>
+                    </form>
+                    <hr>
+                    <p><a href="/register" class="btn btn-outline-secondary">Create your account in seconds</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
