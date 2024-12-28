@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Request
+from fastapi.templating import Jinja2Templates
+
 
 client_router = APIRouter(
     tags=["Client"]

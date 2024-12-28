@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request,APIRouter
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from routers.auth_router import auth
-from routers.client_router import client_router
-from routers.product_router import product_router
-from routers.enterprise_router import enterprise_router
-from routers.invoice_router import invoice_router
+# from routers.auth_router import auth
+# from routers.client_router import client_router
+# from routers.product_router import product_router
+# from routers.enterprise_router import enterprise_router
+# from routers.invoice_router import invoice_router
 
 app = FastAPI()
 
@@ -17,13 +17,57 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # Include routers
-app.include_router(auth)
-app.include_router(client_router)
-app.include_router(product_router)
-app.include_router(enterprise_router)
-app.include_router(invoice_router)
+# app.include_router(auth)
+# app.include_router(client_router)
+# app.include_router(product_router)
+# app.include_router(enterprise_router)
+# app.include_router(invoice_router)
 
+# auth
+@app.get("/")
+async def read_root(request: Request):
+    return templates.TemplateResponse("login/login.html", {"request": request})
 
+@app.get("/register")
+async def register(request: Request):
+    return templates.TemplateResponse("login/register.html", {"request": request})
+
+@app.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("login/login.html", {"request": request})
+#clinets
+@app.get("/client")
+async def client(request: Request):
+    return templates.TemplateResponse("pages/client.html", {"request": request})
+@app.get("/addClient")
+async def addClient(request: Request):
+    return templates.TemplateResponse("pages/addClient.html", {"request": request})
+#products
+@app.get("/product")
+async def product(request: Request):
+    return templates.TemplateResponse("pages/product.html", {"request": request})
+@app.get("/addProduct")
+async def addProduct(request: Request):
+    return templates.TemplateResponse("pages/addProduct.html", {"request": request})
+
+#invoice
+@app.get("/invoice")
+async def addInvoices(request: Request):
+    return templates.TemplateResponse("pages/invoices.html", {"request": request})
+@app.get("/createInvoice")
+async def addInvoices(request: Request):
+    return templates.TemplateResponse("pages/createInvoice.html", {"request": request})
+
+#enterprise
+@app.get("/addEnterprise")
+async def addEnterprise(request: Request):
+    return templates.TemplateResponse("pages/addEnterprise.html", {"request": request})
+
+@app.get("/enterprise")
+async def addEnterprise(request: Request):
+    return templates.TemplateResponse("pages/enterprise.html", {"request": request})
+
+#facture
 @app.get("/facture")
 async def addEnterprise(request: Request):
     return templates.TemplateResponse("pages/generateReport.html", {"request": request})
