@@ -162,3 +162,7 @@ input:checked + .slider:before {
 ::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
 }
+
+.table-responsive {
+    overflow: visible !important;
+}

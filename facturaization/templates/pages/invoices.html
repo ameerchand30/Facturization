@@ -54,20 +54,34 @@
                     <th>Invoce Date<i class="fa fa-sort"></i></th>
                     <th>Mode of Payment <i class="fa fa-sort"></i></th>
                     <th>Paid Date<i class="fa fa-sort"></i></th>
-                    <
+                    <th>Amount<i class="fa fa-sort"></i></th>
                     <th>Notes<i class="fa fa-sort"></i></th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><input type="checkbox"></td>
-                    <td>xyz</td>
-                    <td></td>
-                    <td></td>
+                    <td>C1250</td>
+                    <td>Tanio</td>
+                    <td>22/10/2024</td>
+                    <td>Virement</td>
+                    <td>22/10/2024</td>
                     <td>1900,00 €</td>
-                    <td>5 alle de l'orangrie 95600 eaubonne</td>
-                    
                     <td>here we can show extra information if customer have</td>
+                    <td>
+                        <div class="btn-group actions-btn">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                Actions <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="createInvoice"><i class="fa fa-pencil"></i> Edit Invoice</a></li>
+                                <li><a href="#"><i class="fa fa-envelope"></i> View Invoice</a></li>
+                                <li><a href="#"><i class="fa fa-trash"></i> Delete</a></li>
+                                <li><a href="#"><i class="fa fa-ban"></i> PDF</a></li> 
+                            </ul>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>

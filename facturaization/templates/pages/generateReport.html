@@ -1,0 +1,14 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}Client page{% endblock %}
+
+    {% block extra_css %}
+        <link rel="stylesheet" href="{{ url_for('static', path='/css/facture.css') }}">
+    {% endblock %}
+
+{% block content %}
+    {% include 'components/cards/facture.html' %}
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
