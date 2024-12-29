@@ -6,7 +6,18 @@ from api.routers.client_router import client_router
 # from routers.product_router import product_router
 # from routers.enterprise_router import enterprise_router
 # from routers.invoice_router import invoice_router
+# models
+from api.models.client import Clients
 
+from database import Base, engine
+
+
+
+# Create the database tables   
+Base.metadata.create_all(bind=engine)
+
+
+# Create the FastAPI app
 app = FastAPI()
 
 # Set up Jinja2 templates
