@@ -14,17 +14,18 @@
             <li><a href="#">Clients</a></li>
             <li class="active">New Client</li>
         </ol>
-         <!-- Form Actions -->
-         <div class="form-actions">
-            <div class="text-right">
-                <button type="button" class="btn btn-default">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </div>
+
 
         <div class="main-container">
             <div class="scrollable-container">
-                <form>
+                <form action="/clients/" method="post">
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <div class="text-right">
+                            <button type="button" class="btn btn-default">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
                     <div class="row">
                         <!-- Left Column -->
                         <div class="col-md-6">
@@ -45,7 +46,7 @@
                                     <!-- ... additional info form content ... -->
                                     <div class="form-group">
                                         <label>Notes</label>
-                                        <textarea class="form-control"></textarea>
+                                        <textarea id="notes" name="notes" class="form-control"></textarea>
                                     </div>
                                 </div>
                             </div>
