@@ -11,8 +11,6 @@ from api.models.client import Clients
 
 from database import Base, engine
 
-
-
 # Create the database tables   
 Base.metadata.create_all(bind=engine)
 
@@ -35,7 +33,7 @@ app.include_router(client_router)
 # app.include_router(invoice_router)
 
 # auth
-"""
+
 @app.get("/")
 async def read_root(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
@@ -118,7 +116,7 @@ async def dashboard(request: Request):
     }
     
     return templates.TemplateResponse("pages/dashboard.html",{"request": request, **context} )
-"""
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
