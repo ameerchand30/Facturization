@@ -1,22 +1,3 @@
-<!--
-# this code is example of how to create a sidebar component
-<nav class="sidebar">
-    <div class="p-3">
-        <h5 class="text-white mb-1">{{ company_name }}</h5>
-        <small class="text-muted">{{ user_name }}</small>
-    </div>
-    <ul class="nav flex-column">
-        {% for item in nav_items %}
-        <li class="nav-item">
-            <a class="nav-link {% if item.active %}active{% endif %}" href="{{ item.url }}">
-                <i class="fas fa-{{ item.icon }} me-2"></i>
-                <span>{{ item.name }}</span>
-                <span class="add-button">+</span>
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-</nav> -->
 
 <nav class="navbar-default navbar-static-side" role="navigation">
     <div class="sidebar-collapse">
@@ -40,25 +21,24 @@
                     CH+
                 </div>
             </li>
-            <li class="active">
-                <a href="dashboard"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboards</span> <span class="fa arrow"></span></a>
+            <li class="{% if current_page == 'dashboard' %}active{% endif %}">
+                <a href="{{ url_for('dashboard') }}"><i class="fa fa-th-large"></i> <span class="nav-label">Dashboards</span> <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
-                    <li class="active"><a href="dashboard">Dashboard</a></li>
+                    <li class="{% if current_page == 'dashboard' %}active{% endif %}"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 </ul>
             </li>
-            <li >
-                <a href="client"><i class="fa fa-user"></i> <span class="nav-label">Client</span></a>
+            <li class="{% if current_page == 'clients' %}active{% endif %}">
+                <a href="{{ url_for('read_clients') }}"><i class="fa fa-user"></i> <span class="nav-label">Client</span></a>
                 <ul class="nav nav-second-level">
-                    <li class="active"><a href="client">View Clients</a></li>
-                    <li class="active"><a href="addClient"> Add Client</a></li>
+                    <li class="{% if current_page == 'view_clients' %}active{% endif %}"><a href="{{ url_for('read_clients') }}">View Clients</a></li>
+                    <li class="{% if current_page == 'add_client' %}active{% endif %}"><a href="{{ url_for('add_client_form') }}">Add Client</a></li>
                 </ul>
             </li>
-            <li>
-                <a href="product"><i class="fa fa-shower"></i> <span class="nav-label">Product</span></a>
+            <li class="{% if current_page == 'products' %}active{% endif %}">
+                <a href="{{ url_for('read_products') }}"><i class="fa fa-shower"></i> <span class="nav-label">Product</span></a>
                 <ul class="nav nav-second-level">
-                    <li class="active"><a href="product">View Product</a></li>
-                    <li class="active"><a href="addProduct"> Add Product </a></li>
-                    
+                    <li class="{% if current_page == 'view_products' %}active{% endif %}"><a href="{{ url_for('read_products') }}">View Product</a></li>
+                    <li class="{% if current_page == 'add_product' %}active{% endif %}"><a href="{{ url_for('add_product_form') }}">Add Product</a></li>
                 </ul>
             </li>
             <li>

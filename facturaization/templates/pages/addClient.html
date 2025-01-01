@@ -1,6 +1,8 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Client page{% endblock %}
+{% block title %}
+    {{ "Update Client" if client else "Add Client" }}
+{% endblock %}
 
     {% block extra_css %}
         
@@ -12,18 +14,17 @@
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-home"></i></a></li>
             <li><a href="#">Clients</a></li>
-            <li class="active">New Client</li>
+            <li class="active">{{ "Update Client" if clients else "Add Client" }}</li>
         </ol>
-
 
         <div class="main-container">
             <div class="scrollable-container">
-                <form action="/clients/" method="post">
+                <form action="{{ url_for('create_client') if not clients else url_for('update_client', client_id=client_id) }}" method="post">
                     <!-- Form Actions -->
                     <div class="form-actions">
                         <div class="text-right">
                             <button type="button" class="btn btn-default">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary">{{"Update Client" if clients else "Add Client"}}</button>
                         </div>
                     </div>
                     <div class="row">
@@ -55,8 +56,6 @@
                 </form>
             </div>
         </div>
-
-       
     </div>
 {% endblock %}
 

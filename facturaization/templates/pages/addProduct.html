@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Client page{% endblock %}
+{% block title %}{{ "Update Product" if product else "Add Product" }}{% endblock %}
 
     {% block extra_css %}
        
@@ -12,43 +12,44 @@
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-home"></i></a></li>
             <li><a href="#">Products</a></li>
-            <li class="active">Add Product</li>
+            <li class="active">{{ "Update Product" if product else "Add Product" }}</li>
         </ol>
 <!-- Form Actions -->
-        <div class="form-actions">
-            <div class="text-right">
-                <button type="button" class="btn btn-default">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </div>
+     
         <div class="main-container">
             <div class="scrollable-container">
-                <form>
+                <form action="{{ url_for('create_product') if not product else url_for('update_product', product_id=product.id) }}" method="post">
                     <div class="row">
-                        <!-- Left Column -->
+                        <!-- Action Button -->
+                        <div class="form-actions">
+                            <div class="text-right">
+                                <button type="button" class="btn btn-default">Cancel</button>
+                                <button type="submit" class="btn btn-primary">{{ "update product" if product else "Add product"}}</button>
+                            </div>
+                        </div>
                         <div class="col-md-12">
-                            <!-- Company Details Card -->
+                            <!-- Product Details Card -->
                             <div class="card">
-                                <h3 class="card-title">Add Product</h3>
+                                <h3 class="card-title">{{ "Update Product" if product else "Add Product" }}</h3>
                                 <div class="card-body">
-                                    <!-- Company Details form groups -->
+                                    <!-- Product Details form groups -->
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" class="form-control">
+                                        <input type="text" id="name" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Ref Number</label>
-                                        <input type="text" class="form-control">
+                                        <input type="text" id="ref_number" name="ref_number" class="form-control" value="{{ product.ref_number if product else '' }}">
                                     </div>
                                     <div class="form-group">
                                         <label>price</label>
-                                        <input type="number" class="form-control">
+                                        <input type="number" id="price" name="price" class="form-control" value="{{ product.price if product else '' }}">
                                     </div>
                                     <div class="form-group">
                                         <label>Notes</label>
-                                        <textarea class="form-control"></textarea>
+                                        <textarea id="notes" name="notes" class="form-control">{{ product.description if product else '' }}</textarea>
                                     </div>
-                                    <!-- ... rest of the company details form groups ... -->
+                                    <!-- ... rest of the Prdouct details form groups ... -->
                                 </div>
                             </div>                           
                         </div>
