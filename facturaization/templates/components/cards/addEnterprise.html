@@ -3,11 +3,12 @@
     <div class="card-body">
         <div class="form-group">
             <label>Select Customer</label>
-            <input type="text" id="customerSearch" name="customerSearch" class="form-control" placeholder="Search for a customer...">
+            <input type="text" id="customerSearch" name="customerSearch" class="form-control" placeholder="Search for a customer..." value="{{ enterprise.client.name if enterprise else '' }}">
+            <input type="hidden" id="customerId" name="customer_Id" value="{{ enterprise.client_id if enterprise else '' }}">  <!-- Hidden input field for customer ID -->
         </div>
         <div class="form-group">
             <label>Customer Email</label>
-            <input type="text" id="customerEmail" name="customerEmail" class="form-control" readonly>
+            <input type="text" id="customerEmail" name="customerEmail" class="form-control" readonly value="{{ enterprise.client.email if enterprise else '' }}">
         </div>
         <div class="form-group">
             <label>Enterprise Name</label>
@@ -18,16 +19,16 @@
             <input type="text" id="enterpriseAddress" name="enterpriseAddress" class="form-control" value="{{ enterprise.address if enterprise else '' }}">
         </div>
         <div class="form-group">
-            <label>State/Province</label>
-            <input type="text" id="enterpriseState" name="enterpriseState" class="form-control" value="{{ enterprise.state if enterprise else '' }}">
+            <label>City</label>
+            <input type="text" id="enterpriseCity" name="enterpriseCity" class="form-control" value="{{ enterprise.city if enterprise else '' }}">
         </div>
         <div class="form-group">
             <label>Postal Code</label>
             <input type="text" id="enterprisePostalCode" name="enterprisePostalCode" class="form-control" value="{{ enterprise.postalCode if enterprise else '' }}">
         </div>
         <div class="form-group">
-            <label>City</label>
-            <input type="text" id="enterpriseCity" name="enterpriseCity" class="form-control" value="{{ enterprise.city if enterprise else '' }}">
+            <label>State/Province</label>
+            <input type="text" id="enterpriseState" name="enterpriseState" class="form-control" value="{{ enterprise.state if enterprise else '' }}">
         </div>
         <div class="form-group">
             <label>Siret No :</label>

@@ -12,10 +12,10 @@
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-home"></i></a></li>
             <li><a href="#">Enterpirse</a></li>
-            <li class="active">Add Enterpirse</li>
+            <li class="active">{% if enterprise %}Update{% else %}Add{% endif %} Enterprise</li>
         </ol>
         <!-- Form Actions -->
-        <form action="{{ url_for('create_client') if not clients else url_for('update_client', client_id=client_id) }}" method="post"></form>
+        <form action="{{ url_for('update_enterprise', enterprise_id=enterprise.id) if enterprise else url_for('create_enterprise') }}" method="post">
             <div class="form-actions">
                 <div class="text-right">
                     <button type="button" class="btn btn-default">Cancel</button>
@@ -46,6 +46,8 @@
                     const customer = customerData[ui.item.value];
                     console.log('Customer data:', customer);
                     $('#customerEmail').val(customer.email);
+                    console.log('Customer_id:', customer.customer_id);
+                    $('#customerId').val(customer.customer_id);
                   
                 }
             });

@@ -9,7 +9,7 @@ def get_enterprises(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Enterprise).offset(skip).limit(limit).all()
 
 def create_enterprise(db: Session, enterprise: EnterpriseCreate):
-    db_enterprise = Enterprise(**enterprise.dict())
+    db_enterprise = enterprise
     db.add(db_enterprise)
     db.commit()
     db.refresh(db_enterprise)
