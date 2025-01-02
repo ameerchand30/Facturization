@@ -14,17 +14,42 @@
             <li><a href="#">Enterpirse</a></li>
             <li class="active">Add Enterpirse</li>
         </ol>
-<!-- Form Actions -->
-        <div class="form-actions">
-            <div class="text-right">
-                <button type="button" class="btn btn-default">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
+        <!-- Form Actions -->
+        <form action="{{ url_for('create_client') if not clients else url_for('update_client', client_id=client_id) }}" method="post"></form>
+            <div class="form-actions">
+                <div class="text-right">
+                    <button type="button" class="btn btn-default">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
             </div>
-        </div>
-        <div class="main-container">
-            <div class="scrollable-container">
-                {% include "components/cards/addEnterprise.html" %}
+            <div class="main-container">
+                <div class="scrollable-container">
+                    {% include "components/cards/addEnterprise.html" %}
+                </div>
             </div>
-        </div>
+        </form>
     </div>
+{% endblock %}
+{% block extra_js %}
+<script id="customerData" type="application/json">
+    {{ customer_data | tojson }}
+   
+</script>
+
+    <script>
+        $(document).ready(function() {
+            const customerData = JSON.parse(document.getElementById('customerData').textContent);
+            const customerNames = Object.keys(customerData);
+            $('#customerSearch').autocomplete({
+                source: customerNames,
+                select: function(event, ui) {
+                    const customer = customerData[ui.item.value];
+                    console.log('Customer data:', customer);
+                    $('#customerEmail').val(customer.email);
+                  
+                }
+            });
+        });
+    </script>
+
 {% endblock %}

@@ -41,6 +41,12 @@
                     <li class="{% if current_page == 'add_product' %}active{% endif %}"><a href="{{ url_for('add_product_form') }}">Add Product</a></li>
                 </ul>
             </li>
+            <li class="{% if current_page == 'view_enterprise' %}active{% endif %}">
+                <a href="{{ url_for('add_enterprise_form') }}"><i class="fa fa-home"></i> <span class="nav-label">Enterprise</span></a>
+                <ul class="nav nav-second-level">
+                    <li class="{% if current_page == 'view_enterprise' %}active{% endif %}"><a href="{{ url_for('read_enterprises') }}">View Enterprise</a></li>
+                    <li class="{% if current_page == 'add_enterprise' %}active{% endif %}"><a href="{{ url_for('add_enterprise_form') }}">Add Enterprise</a></li>
+                </ul>
             <li>
                 <a href="layouts.html"><i class="fa fa-home"></i> <span class="nav-label">Invoice</span></a>
                 <ul class="nav nav-second-level">
@@ -48,13 +54,7 @@
                         <li class="active"><a href="createInvoice">New Invoice</a>
                 </ul>
             </li>
-            <li>
-                <a href="layouts.html"><i class="fa fa-diamond"></i> <span class="nav-label">Enterprise</span></a>
-                <ul class="nav nav-second-level">
-                    <li class="active"><a href="enterprise">View Enterprise</a>
-                        <li class="active"><a href="addEnterprise">Add Enterprise</a>
-                </ul>
-            </li>
+
             <li>
                 <a href="layouts.html"><i class="fa fa-diamond"></i> <span class="nav-label">Invoice</span></a>
                 <ul class="nav nav-second-level">
