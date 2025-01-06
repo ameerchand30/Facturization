@@ -1,15 +1,20 @@
 from fastapi import FastAPI, Request,APIRouter
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-# from routers.auth_router import auth
+
+# from routers.invoice_router import invoice_router
 from api.routers.client_router import client_router
 from api.routers.product_router import product_router
 from api.routers.enterprise_router import enterprise_router
-# from routers.invoice_router import invoice_router
+from api.routers.invoice_router import invoice_router
+
 # models
 from api.models.client import Clients
 from api.models.enterprise import Enterprise
+from api.models.product import ProductModel
+from api.models.invoice import Invoice, InvoiceItem
 
+# database
 from database import Base, engine
 
 # Create the database tables   
@@ -31,13 +36,10 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(client_router)
 app.include_router(product_router)
 app.include_router(enterprise_router)
-# app.include_router(invoice_router)
-
-# auth
+app.include_router(invoice_router)
 
 
-
-
+# Routes
 @app.get("/")
 async def read_root(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
@@ -49,24 +51,6 @@ async def register(request: Request):
 @app.get("/login")
 async def login(request: Request):
     return templates.TemplateResponse("login/login.html", {"request": request})
-
-
-#invoice
-@app.get("/invoice")
-async def addInvoices(request: Request):
-    return templates.TemplateResponse("pages/invoices.html", {"request": request})
-@app.get("/createInvoice")
-async def addInvoices(request: Request):
-    return templates.TemplateResponse("pages/createInvoice.html", {"request": request})
-
-#enterprise
-# @app.get("/addEnterprise")
-# async def addEnterprise(request: Request):
-#     return templates.TemplateResponse("pages/addEnterprise.html", {"request": request})
-
-# @app.get("/enterprise")
-# async def addEnterprise(request: Request):
-#     return templates.TemplateResponse("pages/enterprise.html", {"request": request})
 
 #facture
 @app.get("/facture")

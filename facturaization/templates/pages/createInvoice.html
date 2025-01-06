@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Client page{% endblock %}
+{% block title %} {% if invoice %}Update{% else %}Create{% endif %} Invoice {% endblock %}
 
     {% block extra_css %}
         <link rel="stylesheet" href="{{ url_for('static', path='/css/client.css') }}">
@@ -9,103 +9,112 @@
 
 {% block content %}
 
-         <!-- Form Actions -->
-         <div class="form-actions">
-            <div class="text-right">
-                <button type="button" class="btn btn-default">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </div>
+
 <div class="container">
     <div class="scrollable-container">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label>Client</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" value="karam">
-                                <span class="input-group-addon">
-                                <i class="fa fa-times"></i>
-                                </span>
+        <form action="{{ url_for('create_invoice') }}" method="post">
+                     <!-- Form Actions -->
+            <div class="form-actions">
+                <div class="text-right">
+                    <button type="button" class="btn btn-default">Cancel</button>
+                    <button type="submit" class="btn btn-primary">{% if invoice %}Update{% else %}Create{% endif %} Invoice</button>
+                </div>
+            </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                            
+                                <div class="form-group">
+                                    <label for="customerSearch">Search Customer</label>
+                                    <div class="input-group">
+                                        <input type="text" id="customerSearch" name="customerSearch" class="form-control" placeholder="Search for a customer..." value="{{ invoice.client.name if invoice else '' }}">
+                                        <input type="hidden" id="customerId" name="customerId" value="{{ invoice.client_id if invoice else '' }}">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-times"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Client Email</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="karam@gmail.com">
+                                        <span class="input-group-addon">
+                                        <i class="fa fa-times"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="enterpriseSelect">Select Enterprise</label>
+                                    <select id="enterpriseSelect" name="enterpriseId" class="form-control">
+                                        <option value="">Select an enterprise...</option>
+                                            {% if enterprise_data %}
+                                                {% for enterprise in enterprise_data %}
+                                                    <option value="{{ enterprise.id }}"> {{ enterprise.name }} </option>
+                                                {% endfor %}
+                                            {% endif %}
+                                    </select>
+                                </div>
+                                <div class="help-block">
+                                    <a href="addClient"><i class="fa fa-pencil"></i> Edit Client</a> /
+                                    <a href="client">View in Portal</a>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Client Email</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" value="karam@gmail.com">
-                                <span class="input-group-addon">
-                                <i class="fa fa-times"></i>
-                                </span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label>Invoice Date</label>
+                                    <input type="date" class="form-control" value="2024-12-26">
+                                </div>
+                                <div class="form-group">
+                                    <label>Due Date</label>
+                                    <input type="date" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Partial/Deposit</label>
+                                    <input type="number" class="form-control">
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label>Select Enterprise</Select></label>
-                            <select class="form-control">
-                                <option>Revotech</option>
-                                <option>Greeta</option>
-                            </select>
-                        </div>
-                        <div class="help-block">
-                            <a href="addClient"><i class="fa fa-pencil"></i> Edit Client</a> /
-                            <a href="client">View in Portal</a>
-                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="form-group">
-                    <label>Invoice Date</label>
-                    <input type="date" class="form-control" value="2024-12-26">
-                    </div>
-                    <div class="form-group">
-                    <label>Due Date</label>
-                    <input type="date" class="form-control">
-                    </div>
-                    <div class="form-group">
-                    <label>Partial/Deposit</label>
-                    <input type="text" class="form-control">
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="form-group">
-                    <label>Invoice #</label>
-                    <input type="text" class="form-control">
-                    </div>
-                    <div class="form-group">
-                    <label>PO #</label>
-                    <input type="text" class="form-control">
-                    </div>
-                    <div class="form-group">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <label>TVA</label>
-                            <input type="number" class="form-control" value="20">
-                        </div>
-                        <div class="col-xs-6">
-                            <label>Payment Mode</label>
-                            <select class="form-control">
-                                <option>...</option>
-                                <option>Espace</option>
-                                <option>Cheque</option>
-                                <option>Virement</option>
-                            </select>
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label>Invoice #</label>
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes #</label>
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <label>TVA</label>
+                                            <input type="number" class="form-control" value="20">
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <label>Payment Mode</label>
+                                            <select class="form-control">
+                                                <option>...</option>
+                                                <option>Espace</option>
+                                                <option>Cheque</option>
+                                                <option>Virement</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div> <!-- /.row -->
+                </div> <!-- /.row -->
+        </from>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead>
@@ -115,69 +124,236 @@
                         <th>UNIT COST</th>
                         <th>QUANTITY</th>
                         <th>LINE TOTAL</th>
-                      </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr class="item-row">
-                        <td><input type="text" class="form-control"></td>
-                        <td><input type="text" class="form-control"></td>
-                        <td><input type="number" class="form-control" placeholder="0.00"></td>
-                        <td><input type="number" class="form-control" placeholder="0"></td>
-                        <td>0.00 €</td>
+                        <th>ACTION</th>
                     </tr>
+                </thead>
+                <tbody id="invoiceItemsmain">
+                    <tr>
+                        <td>
+                            <div class="form-group">  
+                                <input type="text" id="productSearch" name="productSearch" class="form-control" placeholder="Search for a product...">
+                                <input type="hidden" id="productId" name="productId">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">                                        
+                                <input type="text" id="productDescription" name="productDescription" class="form-control" placeholder="Product Description..." readonly>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">                                        
+                                <input type="number" id="productUnitPri" name="productUnitPri" class="form-control" placeholder="P/U">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">                                        
+                                <input type="number" id="productQty" name="productQty" class="form-control" placeholder="#" value="1">                                
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <input type="number" id="productTotal" name="productTotal" class="form-control" placeholder="Total Prix" readonly>                                
+                            </div>
+                        </td>
+                        <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
+                    </tr>  
                 </tbody>
             </table>
-            <button class="btn btn-primary add-item-btn">
+            <button class="btn btn-primary add-item-btn" type="button">
                 <span class="glyphicon glyphicon-plus"></span> Add Item
-              </button>
+            </button>
+        </div>
     </div>
-    
+    <!-- invoice to show live invoice Data -->
+<div class="container">
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="invoice-title">
+                        <h2>
+                            <i class="fa fa-file-text-o"></i> FACTURE N0 366
+                        </h2>
+                        <h3 class="pull-right">
+                            <i class="fa fa-calendar"></i> 11 Decembre 2024
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row company-details">
+            <div class="col-xs-6">
+                <div class="company-name">LAL MECANIQUE</div>
+                <address>
+                    <i class="fa fa-user"></i> M. Krishan kishwer E.l.<br>
+                    <i class="fa fa-map-marker"></i> 73 B Rue de Paris<br>
+                    95400 villiers le bel<br>
+                    <i class="fa fa-building"></i> RCS : 885269977<br>
+                    <i class="fa fa-phone"></i> Tel : 0751151997
+                </address>
+            </div>
+            <div class="col-xs-6 text-right">
+                <div class="company-name">Factur� �:</div>
+                <address>
+                    <strong>AC RENOVATION</strong><br>
+                    75 RUE DE LOURMEL<br>
+                    75015 PARIS
+                </address>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-list-alt"></i> Detail de la prestation
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <td><strong>Product Name</strong></td>
+                                        <td class="text-center"><strong>Prix unitaire H.T</strong></td>
+                                        <td class="text-right"><strong>Total H.T</strong></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceItems">
+                                    
+                                    <tr>
+                                        <td> Reparation de boîte vitesse, avec diverse piece necessaire fournies par vos soins</td>
+                                        <td class="text-center amount">1,266.66 €</td>
+                                        <td class="text-right amount">1,266.66 €</td>
+                                    </tr>
+                        
+                                    <!-- table bottom for TVA -->
+                                    <tr class="total-row">
+                                        <td class="thick-line"></td>
+                                        <td class="thick-line text-center"><strong>Total H.T</strong></td>
+                                        <td class="thick-line text-right amount">1,266.66 €</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td class="no-line"></td>
+                                        <td class="no-line text-center"><strong>T.V.A 20%</strong></td>
+                                        <td class="no-line text-right amount">253.33 €</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td class="no-line"></td>
+                                        <td class="no-line text-center"><strong>Total T.T.C</strong></td>
+                                        <td class="no-line text-right amount"><strong>1,519.99 €</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="payment-info">
+            <h4><i class="fa fa-credit-card"></i> Informations de paiement</h4>
+            <div class="row">
+                <div class="col-xs-6">
+                    <strong>Mode de reglement:</strong> virement<br>
+                    <strong>Date de reglement:</strong> 16/12/2024
+                </div>
+            </div>
+        </div>
+        
+        <div class="invoice-meta text-center">
+            <small>Cette facture a generate ectroniquement et est valide sans signature.</small>
+        </div>
+    </div>
 </div>
-{% include 'components/cards/facture.html' %}
+</div> <!-- /.container -->
+
 {% endblock %}
+
+
 {% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function() {
-    $('.add-item-btn').click(function() {
-      // Clone the first row as a template
-      var $newRow = $('.item-row:first').clone();
-
-      // Clear input fields in the new row
-      $newRow.find('input[type="text"]').val('');
-      $newRow.find('input[type="number"]').val('');
-
-      // Set initial line total to 0.00
-      $newRow.find('.line-total').text('0.00 €');
-
-      // Append the new row to the table body
-      $('#tableBody').append($newRow);
-
-      // Bind the calculateLineTotal function to the new row's input change event
-      $newRow.find('input[type="number"]').on('input', calculateLineTotal);
-    });
-
-    function calculateLineTotal(event) {
-      // Get the current row where the input change happened
-      console.log('calculateLineTotal');
-      var $row = $(this).closest('.item-row');
-
-      // Handle potential invalid input (e.g., non-numeric characters)
-      var unitCost = parseFloat($row.find('input[type="number"]:eq(0)').val()) || 0;
-      var quantity = parseFloat($row.find('input[type="number"]:eq(1)').val()) || 0;
-
-      // Calculate line total (ensure non-negative valuepos)
-      var lineTotal = Math.max(0, unitCost * quantity);
-
-      // Update line total text with formatted currency
-      $row.find('.line-total').text(lineTotal.toFixed(2) + ' €');
-    }
-
-    // Calculate line totals on page load (optional)
-    calculateLineTotals();
-
-    // Recalculate line totals on any input change within an item row
-    $(document).on('input', '.item-row input[type="number"]', calculateLineTotal);
-  });
+<script id="customerData" type="application/json">
+    {{ customer_data | tojson }}
 </script>
+<script id="productData" type="application/json">
+    {{ product_data | tojson }}
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        const customerData = JSON.parse(document.getElementById('customerData').textContent);
+        const productData = JSON.parse(document.getElementById('productData').textContent);
+        $('#customerSearch').autocomplete({
+            source: Object.keys(customerData),
+            select: function(event, ui) {
+                const customer = customerData[ui.item.value];
+                $('#customerId').val(customer.id);
+                // $('#enterpriseSelect').empty().append('<option value="">Select an enterprise...</option>');
+                // customer.enterprises.forEach(function(enterprise) {
+                //     $('#enterpriseSelect').append('<option value="' + enterprise.id + '">' + enterprise.name + '</option>');
+                // });
+            }
+        });
+
+        $('#productSearch').autocomplete({
+            source: Object.keys(productData),
+            select: function(event, ui) {
+                const product = productData[ui.item.value];
+                $('#productId').val(product.id);
+                $('#productDescription').val(product.description);
+                $('#productUnitPri').val(product.unit_price);
+                $('#productTotal').val(product.unit_price);
+            }
+        });
+
+        $('.add-item-btn').click(function() {
+            console.log('add item');
+            const productId = $('#productId').val();
+            const productName = $('#productSearch').val();
+            const productDescription = $('#productDescription').val();
+            const quantity = $('#productQty').val();
+            const unitPrice = productData[productName].unit_price;
+            const totalPrice = quantity * unitPrice;
+            const newRow = `
+                <tr>
+                    <td>${productName}</td>
+                    <td>${productDescription}</td>
+                    <td>${unitPrice}</td>
+                    <td>${quantity}</td>
+                    <td>${totalPrice.toFixed(2)}</td>
+                    <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
+                </tr>
+            `;
+            factureCalculate(productName,productDescription,unitPrice,quantity);
+            $('#invoiceItemsmain').append(newRow);
+            $('#productSearch').val('');
+            $('#productId').val('');
+            $('#productDescription').val('');
+            $('#productQty').val(1);
+            $('#productTotal').val('');
+            
+
+        });
+
+        $(document).on('click', '.remove-item-btn', function() {
+            $(this).closest('tr').remove();
+        });
+        
+        function factureCalculate(productName,productDescription,unitPrice,quantity) {
+            const newRow = `
+                <tr>
+                    <td class="text-left">${productName},  ${productDescription} </td>
+                    <td class="text-center amount">${unitPrice} * ${quantity} €</td>
+                    <td class="text-center amount">${quantity * unitPrice} €</td>
+                </tr>
+            `;
+            $('#invoiceItems').prepend(newRow);
+
+        }
+    });
+</script>
+
 {% endblock %}

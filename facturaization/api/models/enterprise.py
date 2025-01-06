@@ -17,3 +17,4 @@ class Enterprise(Base):
     client_id = Column(Integer, ForeignKey('clients.id'))
 
     client = relationship("Clients", back_populates="enterprises")
+    invoices = relationship("Invoice", back_populates="enterprises")

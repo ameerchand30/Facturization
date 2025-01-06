@@ -47,11 +47,11 @@
                     <li class="{% if current_page == 'view_enterprise' %}active{% endif %}"><a href="{{ url_for('read_enterprises') }}">View Enterprise</a></li>
                     <li class="{% if current_page == 'add_enterprise' %}active{% endif %}"><a href="{{ url_for('add_enterprise_form') }}">Add Enterprise</a></li>
                 </ul>
-            <li>
-                <a href="layouts.html"><i class="fa fa-home"></i> <span class="nav-label">Invoice</span></a>
+            <li class="{% if current_page == 'invoice' %}active{% endif %}">
+                <a href="layouts.html"><i class="fa fa-home"></i> <span class="nav-label">Invoices</span></a>
                 <ul class="nav nav-second-level">
-                    <li class="active"><a href="invoice">Invoice</a>
-                        <li class="active"><a href="createInvoice">New Invoice</a>
+                    <li class="{% if current_page == 'create_invoices' %}active{% endif %}"><a href="{{ url_for('create_invoice_form')}}">Create Invoice</a>
+                    <li class="{% if current_page == 'read_invoices' %} active {% endif %}"><a href="{{ url_for('read_invoices')}}">view Invoices</a>
                 </ul>
             </li>
 

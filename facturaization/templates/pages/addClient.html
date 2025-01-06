@@ -14,7 +14,7 @@
         <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-home"></i></a></li>
             <li><a href="#">Clients</a></li>
-            <li class="active">{{ "Update Client" if clients else "Add Client" }}</li>
+            <li class="active">{{ "Update Client" if client else "Add Client" }}</li>
         </ol>
 
         <div class="main-container">
@@ -24,7 +24,7 @@
                     <div class="form-actions">
                         <div class="text-right">
                             <button type="button" class="btn btn-default">Cancel</button>
-                            <button type="submit" class="btn btn-primary">{{"Update Client" if clients else "Add Client"}}</button>
+                            <button type="submit" class="btn btn-primary">{{"Update Client" if client else "Add Client"}}</button>
                         </div>
                     </div>
                     <div class="row">

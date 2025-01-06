@@ -20,3 +20,4 @@ class Clients(Base):
     notes = Column(String)
     created_at = Column(DateTime, default=func.now())
     enterprises = relationship("Enterprise", back_populates="client")
+    invoices = relationship("Invoice", back_populates="client")
