@@ -31,7 +31,7 @@ def create_invoice(db: Session, invoice: InvoiceCreate):
             product_id=item.product_id,
             quantity=item.quantity,
             unit_price=item.unit_price,
-            total_price=item.quantity * item.unit_price
+            # total_price=item.quantity * item.unit_price
         )
         db.add(db_invoice_item)
     

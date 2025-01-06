@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy.orm import Session
 from typing import List
+from datetime import date
 from database import get_db
 from api.models.client import Clients
 from api.models.enterprise import Enterprise
@@ -43,26 +44,26 @@ async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Dep
 def create_invoice(
     customerId: int = Form(...),
     enterpriseId: int = Form(...),
-    productIds: List[int] = Form([]),
-    descriptions: List[str] = Form([]),
-    quantities: List[int] = Form([]),
-    unitPrices: List[float] = Form([]),
+    creationDate: date = Form(...),
+    productId: List[int] = Form([]),
+    productDescription: List[str] = Form([]),
+    productUnitPri: List[float] = Form([]),
+    productQty: List[float] = Form([]),
     db: Session = Depends(get_db)
 ):
     
     invoice_items = [
-        InvoiceItemCreate(
-            product_id=product_id,
-            description=description,
-            quantity=quantity,
-            unit_price=unit_price,
-            total_price=quantity * unit_price
+        InvoiceItem(
+            product_id=productId,
+            quantity=productQty,
+            unit_price=productUnitPri,
         )
-        for product_id, description, quantity, unit_price in zip(productIds, descriptions, quantities, unitPrices)
+        for productId, productQty, productUnitPri in zip(productId, productQty, productUnitPri)
     ]
     invoice = Invoice(
         client_id=customerId,
         enterprise_id=enterpriseId,
+        creation_date = creationDate,
         invoice_items=invoice_items
     )
     print(invoice)
