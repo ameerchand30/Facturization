@@ -25,19 +25,23 @@ def create_invoice(db: Session, invoice: InvoiceCreate):
     db.commit()
     db.refresh(db_invoice)
 
-    for item in invoice.invoice_items:
-        db_invoice_item = InvoiceItem(
-            invoice_id=db_invoice.id,
-            product_id=item.product_id,
-            quantity=item.quantity,
-            unit_price=item.unit_price,
-            # total_price=item.quantity * item.unit_price
-        )
-        db.add(db_invoice_item)
-    
+    # Split comma-separated values and create invoice items
+    product_ids = str(invoice.invoice_items[0].product_id).split(',')
+    quantities = str(invoice.invoice_items[0].quantity).split(',')
+    unit_prices = str(invoice.invoice_items[0].unit_price).split(',')
+
+    for pid, qty, price in zip(product_ids, quantities, unit_prices):
+        if pid.strip():  # Only create item if product_id is not empty
+            db_invoice_item = InvoiceItem(
+                invoice_id=db_invoice.id,
+                product_id=int(pid.strip()),
+                quantity=float(qty.strip()),
+                unit_price=float(price.strip())
+            )
+            db.add(db_invoice_item)
     db.commit()
     db.refresh(db_invoice)
-    return db_invoice
+    return db_invoice   
 
 def update_invoice(db: Session, invoice_id: int, invoice: InvoiceUpdate):
     db_invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
