@@ -7,7 +7,114 @@
     {% endblock %}
 
 {% block content %}
-    {% include 'components/cards/facture.html' %}
+    <div class="container">
+        <div class="invoice-container">
+            <div class="invoice-header">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="invoice-title">
+                            <h2>
+                                <i class="fa fa-file-text-o"></i> FACTURE N0 {{ invoice.id }}
+                            </h2>
+                            <h3 class="pull-right">
+                                <i class="fa fa-calendar"></i> {{ invoice.creation_date }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row company-details">
+                <div class="col-xs-6">
+                    <div class="company-name">LAL MECANIQUE</div>
+                    <address>
+                        <i class="fa fa-user"></i> M. Krishan kishwer E.l.<br>
+                        <i class="fa fa-map-marker"></i> 73 B Rue de Paris<br>
+                        95400 villiers le bel<br>
+                        <i class="fa fa-building"></i> RCS : 885269977<br>
+                        <i class="fa fa-phone"></i> Tel : 0751151997
+                    </address>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <div class="company-name">Factur {{ invoice.special_invoice_no }}:</div>
+                    <address >
+                        <strong>{{ invoice.enterprises.name }}</strong><br>
+                        {{ invoice.enterprises.address }}<br>
+                        {{ invoice.enterprises.postalCode }} &nbsp; {{ invoice.enterprises.city }}
+                    </address>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <i class="fa fa-list-alt"></i> Detail de la prestation
+                            </h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <td><strong>Désignation du produit</strong></td>
+                                            <td class="text-center"><strong>Prix unitaire H.T</strong></td>
+                                            <td class="text-right"><strong>Total H.T</strong></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{ sum }}
+                                        {% for item in invoice.invoice_items %}
+                                        <tr>
+                                            <td>{{ item.product.name  }}</td>
+                                            <td class="text-center amount"> {{item.unit_price}} * {{item.quantity}} €</td>
+                                            <td class="text-right amount">{{item.unit_price * item.quantity}} €</td>
+                                        </tr>
+                                        <!-- <tr>
+                                            <td>Reparation de boîte vitesse, avec diverse piece necessaire fournies par vos soins</td>
+                                            <td class="text-center amount">1,266.66 €</td>
+                                            <td class="text-right amount">1,266.66 €</td>
+                                        </tr> -->
+                                        {% endfor %}
+                                        <tr class="total-row">
+                                            <td class="thick-line"></td>
+                                            <td class="thick-line text-center"><strong>Total H.T</strong></td>
+                                            <td class="thick-line text-right amount">{{ "%.2f"|format(total_ht) }} €</td>
+                                        </tr>
+                                        <tr class="total-row">
+                                            <td class="no-line"></td>
+                                            <td class="no-line text-center"><strong>T.V.A 20%</strong></td>
+                                            <td class="no-line text-right amount">{{ "%.2f"|format(tva) }} €</td>
+                                        </tr>
+                                        <tr class="total-row">
+                                            <td class="no-line"></td>
+                                            <td class="no-line text-center"><strong>Total T.T.C</strong></td>
+                                            <td class="no-line text-right amount"><strong>{{ "%.2f"|format(total_ttc) }} €</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-info">
+                <h4><i class="fa fa-credit-card"></i> Informations de paiement</h4>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <strong>Mode de reglement:</strong> {{ invoice.payment_method }}<br>
+                        <strong>Date de reglement:</strong> {{invoice.due_date}}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="invoice-meta text-center">
+                <small>Cette facture a generate ectroniquement et est valide sans signature.</small>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_js %}

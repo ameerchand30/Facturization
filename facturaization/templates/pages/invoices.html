@@ -64,7 +64,7 @@
                 <tr>
                     <td><input type="checkbox"></td>
                     <td text-center amount>{{ invoice.id }}</td>
-                    <td text-center amount>{{ invoice.client_id }}</td>
+                    <td text-center amount>{{ invoice.client.name }}</td>
                     <td text-center amount>{{ invoice.creation_date }}</td>
                     <td text-center amount>{{ invoice.payment_method }}</td>
                     <td text-center amount>{{ invoice.due_date }}</td>
@@ -78,8 +78,8 @@
                             <ul class="dropdown-menu">
                                 <li><a href="createInvoice"><i class="fa fa-pencil"></i> Edit Invoice</a></li>
                                 <li><a href="#"><i class="fa fa-envelope"></i> View Invoice</a></li>
-                                <li><a href="#"><i class="fa fa-trash"></i> Delete</a></li>
-                                <li><a href="#"><i class="fa fa-ban"></i> PDF</a></li> 
+                                <li><a href="{{ url_for('getReportForm', invoice_id=invoice.id) }}"><i class="fa fa-trash"></i> Delete</a></li>
+                                <li><a href="{{ url_for('getReportForm', invoice_id=invoice.id) }}"><i class="fa fa-ban"></i> PDF</a></li> 
                             </ul>
                         </div>
                     </td>

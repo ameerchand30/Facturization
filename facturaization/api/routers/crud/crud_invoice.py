@@ -1,12 +1,21 @@
 from sqlalchemy.orm import Session
 from api.models.invoice import Invoice, InvoiceItem
+from sqlalchemy.orm import joinedload
 from api.schemas.invoice import InvoiceCreate, InvoiceUpdate, InvoiceItemCreate
 
 def get_invoice(db: Session, invoice_id: int):
     return db.query(Invoice).filter(Invoice.id == invoice_id).first()
 
 def get_invoices(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Invoice).offset(skip).limit(limit).all()
+    # return db.query(Invoice).offset(skip).limit(limit).all()
+    return (db.query(Invoice)
+            .options(joinedload(Invoice.client))  # Load the client relationship
+            .options(joinedload(Invoice.enterprises))  # Load the enterprise relationship
+            .options(joinedload(Invoice.invoice_items))  # Load invoice items
+            .order_by(Invoice.id.desc())
+            .offset(skip)
+            .limit(limit)
+            .all())
 
 def create_invoice(db: Session, invoice: InvoiceCreate):
     db_invoice = Invoice(
