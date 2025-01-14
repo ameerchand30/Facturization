@@ -15,6 +15,8 @@ pydantic-settings = "^2.7.0"
 psycopg2 = "^2.9.10"
 alembic = "^1.14.0"
 python-multipart = "^0.0.20"
+weasyprint = "^63.1"
+beautifulsoup4 = "^4.12.3"
 
 
 [build-system]

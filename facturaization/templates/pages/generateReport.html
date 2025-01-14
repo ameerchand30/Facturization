@@ -1,13 +1,24 @@
 {% extends "layouts/dashboard.html" %}
 
-{% block title %}Client page{% endblock %}
+{% block title %} Invoice #{{ invoice.id }} {% endblock %}
 
     {% block extra_css %}
-        <link rel="stylesheet" href="{{ url_for('static', path='/css/facture.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/facture.css') }}">
+    {% if not pdf_mode %}  
+    {% endif %}
     {% endblock %}
 
 {% block content %}
-    <div class="container">
+
+  <!-- Add PDF download button -->
+  {% if not pdf_mode %}
+  <div class="text-center mt-4">
+      <a href="{{ url_for('generate_pdf', invoice_id=invoice.id) }}" class="btn btn-primary">
+          Download PDF
+      </a>
+  </div>
+  {% endif %}
+    <div class="container" id ="pdf-container">
         <div class="invoice-container">
             <div class="invoice-header">
                 <div class="row">

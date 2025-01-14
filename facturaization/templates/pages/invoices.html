@@ -10,7 +10,7 @@
 <div class="container-fluid">
     <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-home"></i></a></li>
-        <li class="active">Clients</li>
+        <li class="active">Invoices</li>
     </ol>
 
     <div class="filter-section clearfix">
@@ -37,8 +37,8 @@
                 <input type="text" class="form-control" placeholder="Filter">
             </div>
                 <button class="btn btn-success"><i class="fa fa-upload"></i> Import</button>
-                <!-- <button class="btn btn-primary"><i class="fa fa-plus"></i> New Client</button> -->
-                <a href="createInvoice" class="btn btn-primary">
+                
+                <a href="{{ url_for('create_invoice_form') }}" class="btn btn-primary">
                     <i class="fa fa-plus"></i> New Invoice
                 </a>
         </div>
@@ -76,10 +76,11 @@
                                 Actions <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="createInvoice"><i class="fa fa-pencil"></i> Edit Invoice</a></li>
-                                <li><a href="#"><i class="fa fa-envelope"></i> View Invoice</a></li>
-                                <li><a href="{{ url_for('getReportForm', invoice_id=invoice.id) }}"><i class="fa fa-trash"></i> Delete</a></li>
-                                <li><a href="{{ url_for('getReportForm', invoice_id=invoice.id) }}"><i class="fa fa-ban"></i> PDF</a></li> 
+                                <li><a href="{{ url_for('edit_invoice_form', invoice_id=invoice.id) }}"><i class="fa fa-pencil"></i> Edit Invoice</a></li>
+                                <li><a href="{{ url_for('getReportForm', invoice_id=invoice.id) }}"><i class="fa fa-envelope"></i> View Invoice</a></li>
+                                <li><a href="{{ url_for('delete_invoice', invoice_id=invoice.id) }}"><i class="fa fa-trash"></i> Delete</a></li>
+                                <li><a href="{{ url_for('generate_pdf', invoice_id=invoice.id) }}"><i class="fa fa-ban"></i> PDF</a></li> 
+                                
                             </ul>
                         </div>
                     </td>

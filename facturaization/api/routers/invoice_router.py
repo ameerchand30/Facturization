@@ -19,7 +19,7 @@ invoice_router = APIRouter(
     tags=["Invoices"],
     responses={404: {"description": "Not found"}},
 )
-
+# to show enterprise and customer data while creating inovice
 @invoice_router.get("/create", response_class=HTMLResponse, name="create_invoice_form")
 async def create_invoice_form(request: Request, db: Session = Depends(get_db)):
     customers = db.query(Clients).all()
@@ -29,31 +29,6 @@ async def create_invoice_form(request: Request, db: Session = Depends(get_db)):
     product_data = {product.name: {"id": product.id, "unit_price": product.price,"description":product.description} for product in products}
     return templates.TemplateResponse("pages/createInvoice.html", {"request": request, "customer_data": customer_data, "product_data": product_data, "enterprise_data": enterprise_data, "current_page": "create_invoices"})
 
-@invoice_router.get("/edit/{invoice_id}", response_class=HTMLResponse, name="edit_invoice_form")
-async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Depends(get_db)):
-    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
-    if not invoice:
-        raise HTTPException(status_code=404, detail="Invoice not found")
-    customers = db.query(Clients).all()
-    products = db.query(ProductModel).all()
-    customer_data = {customer.name: {"id": customer.id, "enterprises": [{"id": enterprise.id, "name": enterprise.name} for enterprise in customer.enterprises]} for customer in customers}
-    product_data = {product.name: {"id": product.id, "unit_price": product.unit_price} for product in products}
-    return templates.TemplateResponse("pages/createInvoice.html", {"request": request, "invoice": invoice, "customer_data": customer_data, "product_data": product_data})
-@invoice_router.post("/edit/{invoice_id}", response_class=RedirectResponse, name="update_invoice")
-def update_invoice(
-    invoice_id: int,
-    customerId: int = Form(...),
-    enterpriseId: int = Form(...),
-    invoiceItems: List[InvoiceItemCreate] = Form(...),
-    db: Session = Depends(get_db)
-):
-    invoice_data = InvoiceUpdate(
-        client_id=customerId,
-        enterprise_id=enterpriseId,
-        invoice_items=invoiceItems
-    )
-    crud_invoice.update_invoice(db=db, invoice_id=invoice_id, invoice=invoice_data)
-    return RedirectResponse(url="/invoices", status_code=303)
 # to create new invoice
 @invoice_router.post("/", response_class=RedirectResponse, name="create_invoice")
 def create_invoice(
@@ -85,12 +60,82 @@ def create_invoice(
         creation_date = creationDate,
         invoice_items=invoice_items
     )
-    print(invoice)
     crud_invoice.create_invoice(db=db, invoice=invoice)
     return RedirectResponse(url="/invoices/create", status_code=303)
 
-
+# to show invoices
 @invoice_router.get("/read", response_class=HTMLResponse, name="read_invoices")
 def read_invoices(request: Request, db: Session = Depends(get_db)):
     invoices = crud_invoice.get_invoices(db)
     return templates.TemplateResponse("pages/invoices.html", {"request": request, "invoices": invoices, "current_page": "read_invoices"})
+# to delete invoice
+@invoice_router.get("/delete/{invoice_id}", response_class=RedirectResponse, name="delete_invoice")
+async def delete_invoice(invoice_id: int,db: Session = Depends(get_db)):
+    crud_invoice.delete_invoice(db=db ,invoice_id=invoice_id)
+    invoices = crud_invoice.get_invoices(db)
+    return RedirectResponse(url="/invoices/read", status_code=303)
+
+# to edit the invocies
+@invoice_router.get("/edit/{invoice_id}", response_class=HTMLResponse, name="edit_invoice_form")
+async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Depends(get_db)):
+    invoice = crud_invoice.get_invoice(db=db, invoice_id=invoice_id)
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    
+    customers = db.query(Clients).all()
+    products = db.query(ProductModel).all()
+    enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).all()] # Note method
+    customer_data = {customer.name: {"id": customer.id,"email":customer.email } for customer in customers} # Another method 
+    product_data = {product.name: {"id": product.id, "unit_price": product.price,"description":product.description} for product in products}
+    
+    return templates.TemplateResponse(
+        "pages/createInvoice.html",
+        {
+            "request": request,
+            "invoice": invoice,
+            "customer_data": customer_data,
+            "product_data": product_data,
+            "enterprise_data": enterprise_data,
+            "current_page": "create_invoices",
+            "mode": "edit",
+            "rowCounter": len(invoice.invoice_items)  # Add rowCounter
+        }
+    )
+
+@invoice_router.post("/edit/{invoice_id}", response_class=RedirectResponse, name="update_invoice")
+async def update_invoice(
+    invoice_id: int,
+    customerId: int = Form(...),
+    enterpriseId: int = Form(...),
+    productId: List[int] = Form(...),
+    productDescription: List[str] = Form(...),
+    productUnitPri: List[float] = Form(...),
+    productQty: List[float] = Form(...),
+    db: Session = Depends(get_db)
+):
+    # Create invoice items
+    invoice_items = [
+        InvoiceItemCreate(
+            product_id=pid,
+            description=desc,
+            unit_price=price,
+            quantity=qty,
+            total_price=price * qty
+        )
+        for pid, desc, price, qty in zip(
+            productId, 
+            productDescription, 
+            productUnitPri, 
+            productQty
+        )
+    ]
+    
+    # Update invoice
+    invoice_data = InvoiceUpdate(
+        client_id=customerId,
+        enterprise_id=enterpriseId,
+        invoice_items=invoice_items
+    )
+    
+    crud_invoice.update_invoice(db=db, invoice_id=invoice_id, invoice=invoice_data)
+    return RedirectResponse(url="/invoices", status_code=303)

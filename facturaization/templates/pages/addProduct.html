@@ -24,7 +24,7 @@
                         <div class="form-actions">
                             <div class="text-right">
                                 <button type="button" class="btn btn-default">Cancel</button>
-                                <button type="submit" class="btn btn-primary">{{ "update product" if product else "Add product"}}</button>
+                                <button id="btnSubmit" type="submit" class="btn btn-primary">{{ "update product" if product else "Add product"}}</button>
                             </div>
                         </div>
                         <div class="col-md-12">
@@ -60,3 +60,24 @@
     </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        // Simulate form submission
+        setTimeout(function() {
+            toaster('Product successfully added/updated');
+        }, 500);
+    });
+    
+    function toaster(msg) {
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            showMethod: 'slideDown',
+            timeOut: 4000
+        };
+        toastr.success(msg);
+    }
+    </script>
+{% endblock %}

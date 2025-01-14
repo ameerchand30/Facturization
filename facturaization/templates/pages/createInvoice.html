@@ -12,7 +12,7 @@
 
 <div class="container">
     <div class="scrollable-container">
-        <form action="{{ url_for('create_invoice') }}" method="post">
+        <form action="{{ url_for('update_invoice', invoice_id=invoice.id) if mode == 'edit' else url_for('create_invoice') }}" method="post">
                      <!-- Form Actions -->
             <div class="form-actions">
                 <div class="text-right">
@@ -38,7 +38,7 @@
                                 <div class="form-group">
                                     <label>Client Email</label>
                                     <div class="input-group">
-                                        <input type="text" id="customerEmail" class="form-control" value="karam@gmail.com">
+                                        <input type="text" id="customerEmail" class="form-control" value="{{ invoice.client.email if invoice else '' }}">
                                         <span class="input-group-addon">
                                         <i class="fa fa-times"></i>
                                         </span>
@@ -68,15 +68,15 @@
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label>Invoice Date</label>
-                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="2024-12-26">
+                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="{{ invoice.creation_date if invoice else '2024-12-26' }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Due Date</label>
-                                    <input type="date" id="paidDate" name="paidDate" class="form-control">
+                                    <input type="date" id="paidDate" name="paidDate" class="form-control" value="{{ invoice.due_date if invoice else '2024-12-29' }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Partial/Deposit</label>
-                                    <input type="number" class="form-control">
+                                    <input type="number" class="form-control" value="{{ invoice.partial_amount if invoice else '' }}">
                                 </div>
                             </div>
                         </div>
@@ -87,17 +87,17 @@
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label>Invoice #</label>
-                                    <input type="text" id="specialNo" name="specialNo" class="form-control">
+                                    <input type="text" id="specialNo" name="specialNo" class="form-control" value="{{ invoice.special_invoice_no if invoice else '' }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Notes #</label>
-                                    <input type="text" id="Notes" name="Notes"  class="form-control">
+                                    <input type="text" id="Notes" name="Notes"  class="form-control" value="{{ invoice.description if invoice else '' }}">
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-xs-6">
                                             <label>TVA</label>
-                                            <input type="number" class="form-control" value="20">
+                                            <input type="number" class="form-control" value="{{ invoice.tax if invoice else '20' }}">
                                         </div>
                                         <div class="col-xs-6">
                                             <label>Payment Mode</label>
@@ -128,16 +128,17 @@
                     </tr>
                 </thead>
                 <tbody id="invoiceItemsmain">
+                    <!-- this row will come either it invoice exist it's also obligation to create invoice -->
                     <tr id="row_0">
                         <td>
                             <div class="form-group">  
-                                <input type="text" id="productSearch_0" name="productSearch" class="form-control" placeholder="Search for a product...">
+                                <input type="text" id="productSearch_0" name="productSearch" class="form-control productSearch" placeholder="Search for a product...">
                                 <input type="hidden" id="productId_0" name="productId[]" value="{{ invoiceItems.productId if invoiceItems else '' }}">
                             </div>
                         </td>
                         <td>
                             <div class="form-group">                                        
-                                <input type="text" id="productDescription_0" name="productDescription[]" class="form-control" placeholder="Product Description..." readonly>
+                                <input type="text" id="productDescription_0" name="productDescription" class="form-control" placeholder="Product Description..." readonly>
                             </div>
                         </td>
                         <td>
@@ -156,7 +157,40 @@
                             </div>
                         </td>
                         <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
-                    </tr>  
+                    </tr>
+                {% if invoice and mode == 'edit' %}
+                    {% for item in invoice.invoice_items %}
+                        <tr id="row_{{ loop.index }}">
+                            <td>
+                                <div class="form-group">  
+                                    <input type="text" id="productSearch_{{ loop.index }}" name="productSearch" class="form-control productSearch" placeholder="{{ item.product.name if invoiceItems else 'P' }}" value="{{ item.product.name  }}">
+                                    <input type="hidden" id="productId_{{ loop.index }}" name="productId[]" value="{{ item.product_id  if invoiceItems else '' }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">                                        
+                                    <input type="text" id="productDescription_{{ loop.index }}" name="productDescription[]" class="form-control" placeholder="Product Description..." readonly value="{{ item.product.description }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">                                        
+                                    <input type="number" id="productUnitPri_{{ loop.index }}" name="productUnitPri[]" class="form-control" placeholder="P/U" value="{{ item.unit_price }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">                                        
+                                    <input type="number" id="productQty_{{ loop.index }}" name="productQty[]" class="form-control" placeholder="#" value="{{ item.quantity }}">                                
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input type="number" id="productTotal_{{ loop.index }}" name="productTotal[]" class="form-control" placeholder="Total Prix" readonly>                                
+                                </div>
+                            </td>
+                            <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
                 </tbody>
             </table>
             <button class="btn btn-primary add-item-btn" type="button">
@@ -298,7 +332,7 @@
                 // });
             }
         });
-
+/*
         $('#productSearch_0').autocomplete({
             source: Object.keys(productData),
             select: function(event, ui) {
@@ -311,13 +345,17 @@
             }
         });
  
-        let rowCounter = 0;
-
+        let rowCounter = "{{ rowCounter|default(0) }}";
+        rowCounter = parseInt(rowCounter);
+        function rowIncrement(){
+            rowCounter++;
+        }
         $('.add-item-btn').click(function() {
             // Clone the row
             const newRow = $('#row_' + rowCounter).clone();
             factureCalculate(newRow.find('#productSearch_' + rowCounter).val(),newRow.find('#productDescription_' + rowCounter).val(),newRow.find('#productUnitPri_' + rowCounter).val(),newRow.find('#productQty_' + rowCounter).val());
-            rowCounter++;
+            rowIncrement();
+            console.log(rowCounter);
             // Update IDs to make them unique
             newRow.attr('id', 'row_' + rowCounter);
             newRow.find('input').each(function() {
@@ -357,22 +395,15 @@
             calculateTotal($(this).closest('tr'));
         });
 
+
+
+*/
+
         // Remove row button
         $(document).on('click', '.remove-item-btn', function() {
             $(this).closest('tr').remove();
         });
-        // Update Rows the Facture Design
-        function factureCalculate(productName,productDescription,unitPrice,quantity) {
-                const newRow = `
-                    <tr>
-                        <td class="text-left">${productName},  ${productDescription} </td>
-                        <td class="text-center amount">${unitPrice} * ${quantity} €</td>
-                        <td class="text-center amount">${quantity * unitPrice} €</td>
-                    </tr>
-                `;
-                $('#invoiceItems').prepend(newRow);
 
-            }
         // mehthod function 
 
         // to submit de form data
@@ -437,6 +468,87 @@
                 }
             });
         }); // end of submit form
+
+    let rowCounter = "{{ rowCounter|default(0) }}";
+    rowCounter = parseInt(rowCounter);
+    function rowIncrement(){
+        rowCounter++;
+    }
+            
+    // Bind autocomplete to all product search fields
+    function bindProductAutocomplete() {
+        $('.productSearch').autocomplete({
+            source: Object.keys(productData),
+            select: function(event, ui) {
+                const product = productData[ui.item.value];
+                const row = $(this).closest('tr');
+                row.find('[name="productId[]"]').val(product.id);
+                row.find('[name="productDescription[]"]').val(product.description);
+                row.find('[name="productUnitPri[]"]').val(product.unit_price);
+                calculateTotal(row);
+            }
+        });
+    }
+    // Initial binding
+    bindProductAutocomplete();
+    // Add new row with autocomplete
+    $('.add-item-btn').click(function() {
+        console.log(rowCounter);
+        const newRow = $('#row_' + rowCounter).clone();
+        // factureCalculate(newRow.find('[name="productSearch"]').val(),newRow.find('[name="productDescription"]').val(),newRow.find('[name="productUnitPri"]').val(),newRow.find('[name="productQty"]').val());
+         factureCalculate(newRow.find('#productSearch_' + rowCounter).val(),newRow.find('#productDescription_' + rowCounter).val(),newRow.find('#productUnitPri_' + rowCounter).val(),newRow.find('#productQty_' + rowCounter).val());
+        rowIncrement();
+        // Update IDs and clear values
+        newRow.attr('id', 'row_' + rowCounter);
+        newRow.find('input').each(function() {
+            const oldId = $(this).attr('id');
+            if (oldId) {
+                $(this).attr('id', oldId.replace('_0', '_' + rowCounter));
+            }
+            if (!$(this).is('[name="productQty[]"]')) {
+                $(this).val('');
+            } else {
+                $(this).val('1');
+            }
+        });
+
+        newRow.attr('id', 'row_' + rowCounter);
+            newRow.find('input').each(function() {
+                const oldId = $(this).attr('id');
+                const baseName = $(this).attr('name').replace('[]', '');
+                $(this).attr('id', baseName + '_' + rowCounter);
+                $(this).attr('name', baseName + '[]');
+            });
+
+        $('#invoiceItemsmain').prepend(newRow);
+        bindProductAutocomplete();
+    });
+
+    // Update totals when quantity or unit price changes
+    $(document).on('change', '[name="productQty[]"], [name="productUnitPri[]"]', function() {
+        calculateTotal($(this).closest('tr'));
+    });
+
+        // Calculate total for a row
+    function calculateTotal(row) {
+        const quantity = parseFloat(row.find('[name="productQty[]"]').val()) || 0;
+        const unitPrice = parseFloat(row.find('[name="productUnitPri[]"]').val()) || 0;
+        row.find('[name="productTotal[]"]').val((quantity * unitPrice).toFixed(2));
+    }
+
+    // Update Rows the Facture Design
+    function factureCalculate(productName,productDescription,unitPrice,quantity) {
+            const newRow = `
+                <tr>
+                    <td class="text-left">${productName},  ${productDescription} </td>
+                    <td class="text-center amount">${unitPrice} * ${quantity} €</td>
+                    <td class="text-center amount">${quantity * unitPrice} €</td>
+                </tr>
+            `;
+            $('#invoiceItems').prepend(newRow);
+
+        }
+
 
     }); // end of load function
 
