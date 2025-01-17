@@ -14,23 +14,23 @@ client_router = APIRouter(
     tags=["Clients"],
     responses={404: {"description": "Not found"}},
 )
-
+# to show all clinets form
 @client_router.get("/", response_class=HTMLResponse , name="read_clients")
 async def read_clients(request: Request, db: Session = Depends(get_db)):
     clients = db.query(Clients).all()
     return templates.TemplateResponse("pages/clients.html", {"request": request, "clients": clients, "current_page": "view_clients"})
-
+# to add Client form
 @client_router.get("/add", response_class=HTMLResponse, name="add_client_form")
 async def add_client_form(request: Request):
     return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": None, "current_page": "add_client"})
-
+# when a Enterpenieur Click on Edit 
 @client_router.get("/edit/{client_id}", response_class=HTMLResponse, name="edit_client_form")
 async def edit_client_form(client_id: int, request: Request, db: Session = Depends(get_db)):
     client = db.query(Clients).filter(Clients.id == client_id).first()
     if client is None:
         raise HTTPException(status_code=404, detail="Client not found")
     return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": client, "current_page": "edit_client"})
-
+# this is to add new Client 
 @client_router.post("/", response_class=RedirectResponse, name="create_client")
 async def create_client(
     name: str = Form(...),
@@ -81,9 +81,6 @@ async def update_client(
     notes: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    client = db.query(Clients).filter(Clients.id == client_id).first()
-    if client is None:
-        raise HTTPException(status_code=404, detail="Client not found")
     client_data = {
         "name": name,
         "nationality": nationality,
@@ -97,8 +94,6 @@ async def update_client(
         "phone": phone,
         "notes": notes,
     }
-    for key, value in client_data.items():
-        setattr(client, key, value)
+    db.query(Clients).filter(Clients.id == client_id).update(client_data)
     db.commit()
-    db.refresh(client)
     return RedirectResponse(url="/clients", status_code=303)

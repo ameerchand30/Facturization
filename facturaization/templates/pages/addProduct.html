@@ -35,7 +35,7 @@
                                     <!-- Product Details form groups -->
                                     <div class="form-group">
                                         <label>Name</label>
-                                        <input type="text" id="name" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
+                                        <input type="text" id="product_name" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Ref Number</label>
@@ -47,7 +47,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Notes</label>
-                                        <textarea id="notes" name="notes" class="form-control">{{ product.description if product else '' }}</textarea>
+                                        <textarea id="notes" name="description" class="form-control">{{ product.description if product else '' }}</textarea>
                                     </div>
                                     <!-- ... rest of the Prdouct details form groups ... -->
                                 </div>
@@ -61,23 +61,47 @@
 {% endblock %}
 
 {% block extra_js %}
+
 <script>
-    $('form').on('submit', function(e) {
+
+$('form').on('submit', function(e) {
         e.preventDefault();
-        // Simulate form submission
-        setTimeout(function() {
-            toaster('Product successfully added/updated');
-        }, 500);
+        const form = $(this);
+        const formData = new FormData(form[0]);
+        // Convert FormData to JSON object
+        const jsonData = Object.fromEntries(formData);
+        // Submit form using fetch
+        fetch(form.attr('action'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    location.reload();
+                });
+                form[0].reset();
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error.message || 'Something went wrong!'
+            });
+        });
     });
-    
-    function toaster(msg) {
-        toastr.options = {
-            closeButton: true,
-            progressBar: true,
-            showMethod: 'slideDown',
-            timeOut: 4000
-        };
-        toastr.success(msg);
-    }
-    </script>
+</script>
 {% endblock %}

@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Partial/Deposit</label>
-                                    <input type="number" class="form-control" value="{{ invoice.partial_amount if invoice else '' }}">
+                                    <input type="number" id="partial_amount" class="form-control" value="{{ invoice.partial_amount if invoice else '' }}">
                                 </div>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                         <td>
                             <div class="form-group">  
                                 <input type="text" id="productSearch_0" name="productSearch" class="form-control productSearch" placeholder="Search for a product...">
-                                <input type="hidden" id="productId_0" name="productId[]" value="{{ invoiceItems.productId if invoiceItems else '' }}">
+                                <input type="hidden" id="productId_0" name="productId" value="{{ invoiceItems.productId if invoiceItems else '' }}">
                             </div>
                         </td>
                         <td>
@@ -143,17 +143,17 @@
                         </td>
                         <td>
                             <div class="form-group">                                        
-                                <input type="number" id="productUnitPri_0" name="productUnitPri[]" class="form-control" placeholder="P/U">
+                                <input type="number" id="productUnitPri_0" name="productUnitPri" class="form-control" placeholder="P/U">
                             </div>
                         </td>
                         <td>
                             <div class="form-group">                                        
-                                <input type="number" id="productQty_0" name="productQty[]" class="form-control" placeholder="#" value="1">                                
+                                <input type="number" id="productQty_0" name="productQty" class="form-control" placeholder="#" value="1">                                
                             </div>
                         </td>
                         <td>
                             <div class="form-group">
-                                <input type="number" id="productTotal_0" name="productTotal[]" class="form-control" placeholder="Total Prix" readonly>                                
+                                <input type="number" id="productTotal_0" name="productTotal" class="form-control" placeholder="Total Prix" readonly>                                
                             </div>
                         </td>
                         <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
@@ -164,27 +164,27 @@
                             <td>
                                 <div class="form-group">  
                                     <input type="text" id="productSearch_{{ loop.index }}" name="productSearch" class="form-control productSearch" placeholder="{{ item.product.name if invoiceItems else 'P' }}" value="{{ item.product.name  }}">
-                                    <input type="hidden" id="productId_{{ loop.index }}" name="productId[]" value="{{ item.product_id  if invoiceItems else '' }}">
+                                    <input type="hidden" id="productId_{{ loop.index }}" name="productId" value="{{ item.product_id  if invoiceItems else '' }}">
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">                                        
-                                    <input type="text" id="productDescription_{{ loop.index }}" name="productDescription[]" class="form-control" placeholder="Product Description..." readonly value="{{ item.product.description }}">
+                                    <input type="text" id="productDescription_{{ loop.index }}" name="productDescription" class="form-control" placeholder="Product Description..." readonly value="{{ item.product.description }}">
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">                                        
-                                    <input type="number" id="productUnitPri_{{ loop.index }}" name="productUnitPri[]" class="form-control" placeholder="P/U" value="{{ item.unit_price }}">
+                                    <input type="number" id="productUnitPri_{{ loop.index }}" name="productUnitPri" class="form-control" placeholder="P/U" value="{{ item.unit_price }}">
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">                                        
-                                    <input type="number" id="productQty_{{ loop.index }}" name="productQty[]" class="form-control" placeholder="#" value="{{ item.quantity }}">                                
+                                    <input type="number" id="productQty_{{ loop.index }}" name="productQty" class="form-control" placeholder="#" value="{{ item.quantity }}">                                
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <input type="number" id="productTotal_{{ loop.index }}" name="productTotal[]" class="form-control" placeholder="Total Prix" readonly>                                
+                                    <input type="number" id="productTotal_{{ loop.index }}" name="productTotal" class="form-control" placeholder="Total Prix" readonly>                                
                                 </div>
                             </td>
                             <td><button type="button" class="btn btn-danger remove-item-btn">Remove</button></td>
@@ -228,7 +228,7 @@
                 </address>
             </div>
             <div class="col-xs-6 text-right">
-                <div class="company-name">Factur� �:</div>
+                <div class="company-name">Factur���:</div>
                 <address>
                     <strong>AC RENOVATION</strong><br>
                     75 RUE DE LOURMEL<br>
@@ -255,29 +255,27 @@
                                         <td class="text-right"><strong>Total H.T</strong></td>
                                     </tr>
                                 </thead>
-                                <tbody id="invoiceItems">
-                                    
+                                <tbody id="invoice_preview">
                                     <tr>
                                         <td> Reparation de boîte vitesse, avec diverse piece necessaire fournies par vos soins</td>
                                         <td class="text-center amount">1,266.66 €</td>
                                         <td class="text-right amount">1,266.66 €</td>
                                     </tr>
-                        
                                     <!-- table bottom for TVA -->
                                     <tr class="total-row">
                                         <td class="thick-line"></td>
-                                        <td class="thick-line text-center"><strong>Total H.T</strong></td>
-                                        <td class="thick-line text-right amount">1,266.66 €</td>
+                                        <td class="thick-line text-center" ><strong>Total H.T</strong></td>
+                                        <td class="thick-line text-right amount" id="total-ht">1,266.66 €</td>
                                     </tr>
                                     <tr class="total-row">
                                         <td class="no-line"></td>
-                                        <td class="no-line text-center"><strong>T.V.A 20%</strong></td>
-                                        <td class="no-line text-right amount">253.33 €</td>
+                                        <td class="no-line text-center" ><strong>T.V.A 20%</strong></td>
+                                        <td class="no-line text-right amount" id="total-tva">253.33 €</td>
                                     </tr>
                                     <tr class="total-row">
                                         <td class="no-line"></td>
                                         <td class="no-line text-center"><strong>Total T.T.C</strong></td>
-                                        <td class="no-line text-right amount"><strong>1,519.99 €</strong></td>
+                                        <td class="no-line text-right amount" id="total-ttc"><strong>1,519.99 €</strong></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -332,127 +330,54 @@
                 // });
             }
         });
-/*
-        $('#productSearch_0').autocomplete({
-            source: Object.keys(productData),
-            select: function(event, ui) {
-                const product = productData[ui.item.value];
-                $('#productId_0').val(product.id);
-                $('#productDescription_0').val(product.description);
-                $('#productUnitPri_0').val(product.unit_price);
-                $('#productTotal_0').val(product.unit_price);
-                
-            }
-        });
- 
-        let rowCounter = "{{ rowCounter|default(0) }}";
-        rowCounter = parseInt(rowCounter);
-        function rowIncrement(){
-            rowCounter++;
-        }
-        $('.add-item-btn').click(function() {
-            // Clone the row
-            const newRow = $('#row_' + rowCounter).clone();
-            factureCalculate(newRow.find('#productSearch_' + rowCounter).val(),newRow.find('#productDescription_' + rowCounter).val(),newRow.find('#productUnitPri_' + rowCounter).val(),newRow.find('#productQty_' + rowCounter).val());
-            rowIncrement();
-            console.log(rowCounter);
-            // Update IDs to make them unique
-            newRow.attr('id', 'row_' + rowCounter);
-            newRow.find('input').each(function() {
-                const oldId = $(this).attr('id');
-                const baseName = $(this).attr('name').replace('[]', '');
-                $(this).attr('id', baseName + '_' + rowCounter);
-                $(this).attr('name', baseName + '[]');
-            });
-            // Clear values except quantity which stays at 1
-            newRow.find('input:not([name="productQty[]"])').val('');
-
-            // Initialize autocomplete for the new row
-            newRow.find('[id^="productSearch"]').autocomplete({
-                source: Object.keys(productData),
-                select: function(event, ui) {
-                    const product = productData[ui.item.value];
-                    $(this).closest('tr').find('[name="productId[]"]').val(product.id);
-                    $(this).closest('tr').find('[name="productDescription[]"]').val(product.description);
-                    $(this).closest('tr').find('[name="productUnitPri[]"]').val(product.unit_price);
-                    calculateTotal($(this).closest('tr'));
-                }
-            });
-            
-            // Add to table
-            $('#invoiceItemsmain').prepend(newRow);
-        });
-
-        // Function to calculate total
-        function calculateTotal(row) {
-            const quantity = parseFloat(row.find('[name="productQty[]"]').val()) || 0;
-            const unitPrice = parseFloat(row.find('[name="productUnitPri[]"]').val()) || 0;
-            row.find('[name="productTotal[]"]').val((quantity * unitPrice).toFixed(2));
-        }
-
-        // Update total when quantity or unit price changes
-        $(document).on('change', '[name="productQty[]"], [name="productUnitPri[]"]', function() {
-            calculateTotal($(this).closest('tr'));
-        });
-
-
-
-*/
-
         // Remove row button
         $(document).on('click', '.remove-item-btn', function() {
             $(this).closest('tr').remove();
+            updateAllRows();
         });
-
-        // mehthod function 
-
         // to submit de form data
-    
         $('form').on('submit', function(e) {
             e.preventDefault();
             
             // Get all non-empty rows
             const validRows = $('#invoiceItemsmain tr').filter(function() {
-                return $(this).find('[name="productId[]"]').val() !== '';
+                return $(this).find('[name="productId"]').val() !== '';
             });
 
             const formData = new FormData();
-
             // Add main invoice data
             formData.append('customerId', $('#customerId').val());
             formData.append('enterpriseId', $('#enterpriseSelect').val());
             formData.append('creationDate', $('#creationDate').val());
             formData.append('paidDate', $('#paidDate').val() || '');
+            formData.append('partial_amount', $('#partial_amount').val() || '');
             formData.append('specialNo', $('#specialNo').val() || '');
             formData.append('Notes', $('#Notes').val() || '');
-
+            // Add product data as arrays
             var productId = [];
             var productUnitPri = [];
             var productQty = [];
-            // Add product data as arrays
             validRows.each(function() {
                 const row = $(this);
                 productId.push(
-                    row.find('[name="productId[]"]').val()
+                    row.find('[name="productId"]').val()
                 );
-
-                // formData.append('productUnitPri[]', row.find('[name="productUnitPri[]"]').val() || '0');
                 productUnitPri.push(
-                    row.find('[name="productUnitPri[]"]').val()
+                    row.find('[name="productUnitPri"]').val()
                 );
-                
                 productQty.push(
-                    row.find('[name="productQty[]"]').val()
+                    row.find('[name="productQty"]').val()
                 );
             });
-
+            
+            formData.append('productId', productId);
+            formData.append('productUnitPri',productUnitPri);
+            formData.append('productQty',productQty);
             // Debug output
             for (let pair of formData.entries()) {
                 console.log(pair[0] + ': ' + pair[1]);
             }
-            formData.append('productId', productId);
-            formData.append('productUnitPri',productUnitPri);
-            formData.append('productQty',productQty);
+
             // Submit form
             $.ajax({
                 url: $(this).attr('action'),
@@ -470,11 +395,10 @@
         }); // end of submit form
 
     let rowCounter = "{{ rowCounter|default(0) }}";
-    rowCounter = parseInt(rowCounter);
+        rowCounter = parseInt(rowCounter);
     function rowIncrement(){
         rowCounter++;
-    }
-            
+    }   
     // Bind autocomplete to all product search fields
     function bindProductAutocomplete() {
         $('.productSearch').autocomplete({
@@ -482,10 +406,11 @@
             select: function(event, ui) {
                 const product = productData[ui.item.value];
                 const row = $(this).closest('tr');
-                row.find('[name="productId[]"]').val(product.id);
-                row.find('[name="productDescription[]"]').val(product.description);
-                row.find('[name="productUnitPri[]"]').val(product.unit_price);
+                row.find('[name="productId"]').val(product.id);
+                row.find('[name="productDescription"]').val(product.description);
+                row.find('[name="productUnitPri"]').val(product.unit_price);
                 calculateTotal(row);
+                updateAllRows();
             }
         });
     }
@@ -494,65 +419,98 @@
     // Add new row with autocomplete
     $('.add-item-btn').click(function() {
         console.log(rowCounter);
-        const newRow = $('#row_' + rowCounter).clone();
-        // factureCalculate(newRow.find('[name="productSearch"]').val(),newRow.find('[name="productDescription"]').val(),newRow.find('[name="productUnitPri"]').val(),newRow.find('[name="productQty"]').val());
-         factureCalculate(newRow.find('#productSearch_' + rowCounter).val(),newRow.find('#productDescription_' + rowCounter).val(),newRow.find('#productUnitPri_' + rowCounter).val(),newRow.find('#productQty_' + rowCounter).val());
+        // const newRow = $('#row_' + rowCounter).clone();
+        const newRow = $('#row_0').clone();
+        updateAllRows();
         rowIncrement();
-        // Update IDs and clear values
-        newRow.attr('id', 'row_' + rowCounter);
-        newRow.find('input').each(function() {
-            const oldId = $(this).attr('id');
-            if (oldId) {
-                $(this).attr('id', oldId.replace('_0', '_' + rowCounter));
-            }
-            if (!$(this).is('[name="productQty[]"]')) {
-                $(this).val('');
-            } else {
-                $(this).val('1');
-            }
-        });
-
+        // Update rows IDs and clear values
         newRow.attr('id', 'row_' + rowCounter);
             newRow.find('input').each(function() {
+                // to clear the row_0
+                if (!$(this).is('[name="productQty"]')) {
+                    $(this).val('');
+                } else {
+                    $(this).val('1');
+                }
+                // to change the IDs of input in the row
                 const oldId = $(this).attr('id');
-                const baseName = $(this).attr('name').replace('[]', '');
+                const baseName = $(this).attr('name');
                 $(this).attr('id', baseName + '_' + rowCounter);
-                $(this).attr('name', baseName + '[]');
             });
-
-        $('#invoiceItemsmain').prepend(newRow);
+        $('#invoiceItemsmain').append(newRow);
         bindProductAutocomplete();
     });
+          // Calculate total for a row
+    function calculateTotal(row) {
+        const quantity = parseFloat(row.find('[name="productQty"]').val()) || 0;
+        const unitPrice = parseFloat(row.find('[name="productUnitPri"]').val()) || 0;
+        row.find('[name="productTotal"]').val((quantity * unitPrice).toFixed(2));
+    }
 
-    // Update totals when quantity or unit price changes
-    $(document).on('change', '[name="productQty[]"], [name="productUnitPri[]"]', function() {
+    let totalHT = 0;
+    let totalTVA = 0;
+    let totalTTC = 0;
+
+    // Monitor changes in main invoice table
+    $('#invoiceItemsmain').on('change', '[name="productQty"], [name="productUnitPri"]', function() {
+        updateAllRows();
         calculateTotal($(this).closest('tr'));
     });
 
-        // Calculate total for a row
-    function calculateTotal(row) {
-        const quantity = parseFloat(row.find('[name="productQty[]"]').val()) || 0;
-        const unitPrice = parseFloat(row.find('[name="productUnitPri[]"]').val()) || 0;
-        row.find('[name="productTotal[]"]').val((quantity * unitPrice).toFixed(2));
-    }
+    function updateAllRows() {
+        totalHT = 0;
+        let invoiceRows = '';
 
-    // Update Rows the Facture Design
-    function factureCalculate(productName,productDescription,unitPrice,quantity) {
-            const newRow = `
-                <tr>
-                    <td class="text-left">${productName},  ${productDescription} </td>
-                    <td class="text-center amount">${unitPrice} * ${quantity} €</td>
-                    <td class="text-center amount">${quantity * unitPrice} €</td>
+        // Process each row in the main table
+        $('#invoiceItemsmain tr').each(function() {
+            const row = $(this);
+            const productName = row.find('.productSearch').val();
+            const productDesc = row.find('[name="productDescription"]').val();
+            const unitPrice = parseFloat(row.find('[name="productUnitPri"]').val()) || 0;
+            const quantity = parseFloat(row.find('[name="productQty"]').val()) || 0;
+            const lineTotal = unitPrice * quantity;
+
+            if (productName && unitPrice && quantity) {
+                totalHT += lineTotal;
+                invoiceRows += `
+                    <tr>
+                        <td class="text-left">${productName}, ${productDesc}</td>
+                        <td class="text-center amount">${unitPrice.toFixed(2)} * ${quantity} €</td>
+                        <td class="text-right amount">${lineTotal.toFixed(2)} €</td>
+                    </tr>
+                `;
+            }
+        });
+            // Update totals
+            totalTVA = totalHT * 0.20;
+            totalTTC = totalHT + totalTVA;
+            invoiceRows += `
+                <tr class="total-row">
+                    <td class="thick-line"></td>
+                    <td class="thick-line text-center" ><strong>Total H.T</strong></td>
+                    <td class="thick-line text-right amount" id="total-ht"> ${totalHT.toFixed(2)} €</td>
+                </tr>
+                <tr class="total-row">
+                    <td class="no-line"></td>
+                    <td class="no-line text-center" ><strong>T.V.A 20%</strong></td>
+                    <td class="no-line text-right amount" id="total-tva"> ${totalTVA.toFixed(2)} €</td>
+                </tr>
+                <tr class="total-row">
+                    <td class="no-line"></td>
+                    <td class="no-line text-center"><strong>Total T.T.C</strong></td>
+                    <td class="no-line text-right amount" id="total-ttc"><strong> ${totalTTC.toFixed(2)} €</strong></td>
                 </tr>
             `;
-            $('#invoiceItems').prepend(newRow);
-
+            // Update invoice preview
+            $('#invoice_preview').html(invoiceRows);
+            $('#total-ht').text(totalHT.toFixed(2) + ' €');
+            $('#total-tva').text(totalTVA.toFixed(2) + ' €');
+            $('#total-ttc').text(totalTTC.toFixed(2) + ' €');
         }
 
+    }); // end of load function 
 
-    }); // end of load function
 
-        
 </script>
 
 {% endblock %}

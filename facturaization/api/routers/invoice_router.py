@@ -36,6 +36,7 @@ def create_invoice(
     enterpriseId: int = Form(...),
     creationDate: date = Form(...),
     paidDate: Optional[str] = Form(None),
+    partial_amount:Optional[str] = Form(None),
     specialNo: Optional[str] = Form(None),
     Notes: Optional[str] = Form(None),
     productId: List[str] = Form(...),
@@ -102,17 +103,25 @@ async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Dep
         }
     )
 
-@invoice_router.post("/edit/{invoice_id}", response_class=RedirectResponse, name="update_invoice")
+@invoice_router.post("/edit/{invoice_id}", response_class=HTMLResponse, name="update_invoice")
 async def update_invoice(
     invoice_id: int,
-    customerId: int = Form(...),
-    enterpriseId: int = Form(...),
-    productId: List[int] = Form(...),
-    productDescription: List[str] = Form(...),
-    productUnitPri: List[float] = Form(...),
-    productQty: List[float] = Form(...),
+    customerId: int = Form(None),
+    enterpriseId: int = Form(None),
+    creationDate: date = Form(None),
+    paidDate: Optional[str] = Form(None),
+    partial_amount:Optional[str] = Form(None),
+    specialNo: Optional[str] = Form(None),
+    Notes: Optional[str] = Form(None),
+    productId: List[str] = Form(None),
+    productUnitPri: Optional[List[str]] = Form(None),
+    productQty: Optional[List[str]] = Form(None),
     db: Session = Depends(get_db)
 ):
+    print("okey", invoice_id)
+    print(customerId)
+    print(productId)
+    return "this is return value "
     # Create invoice items
     invoice_items = [
         InvoiceItemCreate(

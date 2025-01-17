@@ -67,9 +67,18 @@
                         <a href="{{ url_for('edit_product', product_id=product.id) }}" class="btn btn-success">
                             <i class="fa fa-pencil"></i> Edit
                         </a>
-                        <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn btn-primary">
+
+                        <a href="#" onclick="deleteProduct('{{ product.id }}'); return false;" class="btn btn-primary">
                             <i class="fa fa-trash"></i> Delete
                         </a>
+                        <!-- <li>
+                            <a href="#" onclick="deleteProduct('{{ url_for('delete_product', product_id=product.id) }}'); return false;">
+                                <i class="fa fa-trash"></i> Delete
+                            </a>
+                        </li> -->
+                        <!-- <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn btn-primary">
+                            <i class="fa fa-trash"></i> Delete
+                        </a> -->
                     </td>
                 </tr>
                 {% endfor %}
@@ -108,4 +117,46 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function deleteProduct(productId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/products/delete/${productId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Product has been deleted.',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error!',
+                        error.message || 'Something went wrong!',
+                        'error'
+                    );
+                });
+            }
+        });
+    }
+</script>
 {% endblock %}
