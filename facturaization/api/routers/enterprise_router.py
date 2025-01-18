@@ -24,7 +24,7 @@ enterprise_router = APIRouter(
 def read_enterprises(request: Request ,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     enterprises = db.query(Enterprise, Clients).join(Clients, Enterprise.client_id == Clients.id).offset(skip).limit(limit).all()
     return templates.TemplateResponse("pages/enterprise.html", {"request": request, "enterprises": enterprises, "current_page": "view_enterprise"})
-# show the enterprise page with the customer data
+# show the enterprise Form page with the customer data
 @enterprise_router.get("/add", response_class=HTMLResponse, name="add_enterprise_form")
 async def add_enterprise_form(request: Request, db: Session = Depends(get_db)):
     customers = db.query(Clients).all()
@@ -32,31 +32,17 @@ async def add_enterprise_form(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("pages/addEnterprise.html", {"request": request,"customer_data": customer_data, "customers": customers, "current_page": "add_enterprise"})
 
 # create enterprise to the database
-@enterprise_router.post("/", response_class=RedirectResponse, name="create_enterprise")
-def create_enterprise(
-    customer_Id	: int = Form(...),
-    enterpriseAddress: str = Form(None),
-    enterpriseCity: str = Form(None),
-    enterprisePostalCode: str = Form(None),
-    enterpriseState: str = Form(None),
-    enterprisesiretNumber: str = Form(None),
-    enterpriseNote: str = Form(None),
-    enterpriseName: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    enterprise = Enterprise(
-        name=enterpriseName,
-        address=enterpriseAddress,
-        city=enterpriseCity,
-        postalCode=enterprisePostalCode,
-        state=enterpriseState,
-        siretNo=enterprisesiretNumber,
-        notes=enterpriseNote,
-        client_id=customer_Id
-    )
-    print(enterprise.__dict__)
-    crud_enterprise.create_enterprise(db=db, enterprise=enterprise)
-    return RedirectResponse(url="/enterprises", status_code=303)
+@enterprise_router.post("/", response_model=dict, name="create_enterprise")
+def create_enterprise( enterprise : EnterpriseCreate, db: Session = Depends(get_db)):
+    # print(enterprise.__dict__)
+    try:
+        enterprise_dict = enterprise.model_dump()
+        db_enterprise = Enterprise(**enterprise_dict)
+        crud_enterprise.create_enterprise(db=db, enterprise=db_enterprise)
+        return {"success": True, "message": "Enterprise created successfully"}
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}
 
 # link the edit enterprise page
 @enterprise_router.get("/edit/{enterprise_id}", response_class=HTMLResponse, name="edit_enterprise_form")
@@ -69,41 +55,27 @@ def edit_enterprise_form(enterprise_id: int, request: Request, db: Session = Dep
     return templates.TemplateResponse("pages/addEnterprise.html", {"request": request, "enterprise": enterprise, "customer_data": customer_data, "customers": customers, "current_page": "edit_enterprise"})
 
 # update enterprise to the database
-@enterprise_router.post("/edit/{enterprise_id}", response_class=RedirectResponse, name="update_enterprise")
-def update_enterprise(
-    enterprise_id: int,
-    customerId: int = Form(...),
-    enterpriseName: str = Form(...),
-    enterpriseAddress: str = Form(...),
-    enterpriseState: str = Form(...),
-    enterprisePostalCode: str = Form(...),
-    enterpriseCity: str = Form(...),
-    siretNo: str = Form(...),
-    notes: str = Form(...),
-    db: Session = Depends(get_db)
-):
-    enterprise_data = EnterpriseUpdate(
-        name=enterpriseName,
-        address=enterpriseAddress,
-        state=enterpriseState,
-        postalCode=enterprisePostalCode,
-        city=enterpriseCity,
-        siretNo=siretNo,
-        notes=notes,
-        client_id=customerId
-    )
-    crud_enterprise.update_enterprise(db=db, enterprise_id=enterprise_id, enterprise=enterprise_data)
-    return RedirectResponse(url="/enterprises", status_code=303)
+@enterprise_router.post("/update/{enterprise_id}", response_model=dict, name="update_enterprise")
+def update_enterprise(enterprise_id: int, enterprise : EnterpriseUpdate ,db: Session = Depends(get_db)):
+    try:
+        enterprise_dict = enterprise.model_dump()
+        db_enterprise = Enterprise(**enterprise_dict)
+        crud_enterprise.update_enterprise(db,enterprise_id,enterprise_dict)
+        return {"success": True, "message": "Enterprise has been updated"}
+        
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}
+# to delete the enterprise 
+@enterprise_router.delete("/delete/{enterprise_id}", response_model = dict, name="delete_enterprise")
+def delete_enterprise(enterprise_id: int, request: Request ,db: Session = Depends(get_db)):
+    try:
+        crud_enterprise.delete_enterprise(db,enterprise_id)
+        return {"success": True, "message": "Product Deleted successfully"}
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}
 
-
-@enterprise_router.post("/{enterprise_id}", response_class=RedirectResponse, name="delete_enterprise")
-def delete_enterprise(enterprise_id: int, request: Request ,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    db_enterprise = crud_enterprise.get_enterprise(db, enterprise_id=enterprise_id)
-    if db_enterprise is None:
-        raise HTTPException(status_code=404, detail="Enterprise not found")
-    crud_enterprise.delete_enterprise(db=db, enterprise_id=enterprise_id)
-    enterprises = db.query(Enterprise, Clients).join(Clients, Enterprise.client_id == Clients.id).offset(skip).limit(limit).all()
-    return templates.TemplateResponse("pages/enterprise.html", {"request": request, "enterprises": enterprises, "current_page": "view_enterprise"})
 
 
 
