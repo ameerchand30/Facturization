@@ -17,75 +17,61 @@ def get_invoices(db: Session, skip: int = 0, limit: int = 100):
             .limit(limit)
             .all())
 
-def create_invoice(db: Session, invoice: InvoiceCreate):
-    db_invoice = Invoice(
-        client_id=invoice.client_id,
-        enterprise_id=invoice.enterprise_id,
-        creation_date=invoice.creation_date,
-        due_date=invoice.due_date,
-        partial_amount=invoice.partial_amount,
-        total_amount=invoice.total_amount,
-        special_invoice_no=invoice.special_invoice_no,
-        description=invoice.description,
-        tax=invoice.tax,
-        payment_method=invoice.payment_method
+def create_invoice(db: Session, db_invoice: InvoiceCreate):
+    # Extract invoice data without items
+    invoice_data = db_invoice.model_dump(exclude={'invoice_items'})
+    # Create invoice instance
+    db_invoic = Invoice(
+        client_id=invoice_data['client_id'],
+        enterprise_id=invoice_data['enterprise_id'],
+        creation_date=invoice_data.get('creation_date'),
+        due_date=invoice_data.get('due_date'),
+        special_invoice_no=invoice_data.get('special_invoice_no'),
+        description=invoice_data.get('description'),
+        tax=invoice_data.get('tax', 0),
+        payment_method=invoice_data.get('payment_method')
     )
-    db.add(db_invoice)
+    db.add(db_invoic)
+    db.flush()
+    # Create invoice items
+    print(db_invoice.invoice_items)
+    for item in db_invoice.invoice_items:
+        print(item)
+        item_data = item.model_dump()
+        db_item = InvoiceItem(
+            invoice_id=db_invoic.id,
+            product_id=item_data['product_id'],
+            quantity=item_data['quantity'],
+            unit_price=item_data['unit_price']
+        )
+        db.add(db_item)
     db.commit()
-    db.refresh(db_invoice)
-
-    # Split comma-separated values and create invoice items
-    product_ids = str(invoice.invoice_items[0].product_id).split(',')
-    quantities = str(invoice.invoice_items[0].quantity).split(',')
-    unit_prices = str(invoice.invoice_items[0].unit_price).split(',')
-
-    for pid, qty, price in zip(product_ids, quantities, unit_prices):
-        if pid.strip():  # Only create item if product_id is not empty
-            db_invoice_item = InvoiceItem(
-                invoice_id=db_invoice.id,
-                product_id=int(pid.strip()),
-                quantity=float(qty.strip()),
-                unit_price=float(price.strip())
-            )
-            db.add(db_invoice_item)
-    db.commit()
-    db.refresh(db_invoice)
-    return db_invoice   
 
 def update_invoice(db: Session, invoice_id: int, invoice: InvoiceUpdate):
+    # Get existing invoice
     db_invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
     if not db_invoice:
-        return None
+        return {"success": False, "message": "Invoice not found"}
 
-    db_invoice.client_id = invoice.client_id
-    db_invoice.enterprise_id = invoice.enterprise_id
-    db_invoice.creation_date = invoice.creation_date
-    db_invoice.due_date = invoice.due_date
-    db_invoice.partial_amount = invoice.partial_amount
-    db_invoice.total_amount = invoice.total_amount
-    db_invoice.special_invoice_no = invoice.special_invoice_no
-    db_invoice.description = invoice.description
-    db_invoice.tax = invoice.tax
-    db_invoice.payment_method = invoice.payment_method
+    # Update invoice fields
+    invoice_data = invoice.model_dump(exclude={'invoice_items'})
+    for key, value in invoice_data.items():
+        setattr(db_invoice, key, value)
 
+    # Delete existing items
     db.query(InvoiceItem).filter(InvoiceItem.invoice_id == invoice_id).delete()
+    # Create new items
     for item in invoice.invoice_items:
-        db_invoice_item = InvoiceItem(
-            invoice_id=db_invoice.id,
-            product_id=item.product_id,
-            quantity=item.quantity,
-            unit_price=item.unit_price,
-            total_price=item.quantity * item.unit_price
+        item_data = item.model_dump()
+        db_item = InvoiceItem(
+            invoice_id=invoice_id,
+            product_id=item_data['product_id'],
+            quantity=item_data['quantity'],
+            unit_price=item_data['unit_price']
         )
-        db.add(db_invoice_item)
-
+        db.add(db_item)
     db.commit()
-    db.refresh(db_invoice)
-    return db_invoice
-
+    
 def delete_invoice(db: Session, invoice_id: int):
-    db_invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
-    if db_invoice:
-        db.delete(db_invoice)
-        db.commit()
-    return db_invoice
+    db.query(Invoice).filter(Invoice.id == invoice_id).delete()
+    db.commit()

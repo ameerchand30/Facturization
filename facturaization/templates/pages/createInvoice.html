@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Partial/Deposit</label>
-                                    <input type="number" id="partial_amount" class="form-control" value="{{ invoice.partial_amount if invoice else '' }}">
+                                    <input type="number" id="Partial_amount" name="partial_amount" class="form-control" value="{{ invoice.partial_amount if invoice else '' }}">
                                 </div>
                             </div>
                         </div>
@@ -97,15 +97,16 @@
                                     <div class="row">
                                         <div class="col-xs-6">
                                             <label>TVA</label>
-                                            <input type="number" class="form-control" value="{{ invoice.tax if invoice else '20' }}">
+                                            <input type="number" id="Tax" name="tax" class="form-control" value="{{ invoice.tax if invoice else '20' }}">
                                         </div>
                                         <div class="col-xs-6">
                                             <label>Payment Mode</label>
-                                            <select class="form-control">
-                                                <option>...</option>
-                                                <option>Espace</option>
-                                                <option>Cheque</option>
-                                                <option>Virement</option>
+                                            <select id="Payment_method" name="payment_method" class="form-control">
+                                                <option value="">-- Sélectionnez --</option> 
+                                                <option value="Cash">Cash</option>
+                                                <option value="Credit Card">Credit Card</option>
+                                                <option value="Bank Transfer">Bank Transfer</option>
+                                                <option value="PayPal">PayPal</option>
                                             </select>
                                         </div>
                                     </div>
@@ -335,64 +336,74 @@
             $(this).closest('tr').remove();
             updateAllRows();
         });
-        // to submit de form data
-        $('form').on('submit', function(e) {
+                // to submit de form data
+                $('form').on('submit', function(e) {
             e.preventDefault();
+            const form = $(this);
             
-            // Get all non-empty rows
-            const validRows = $('#invoiceItemsmain tr').filter(function() {
-                return $(this).find('[name="productId"]').val() !== '';
-            });
-
-            const formData = new FormData();
-            // Add main invoice data
-            formData.append('customerId', $('#customerId').val());
-            formData.append('enterpriseId', $('#enterpriseSelect').val());
-            formData.append('creationDate', $('#creationDate').val());
-            formData.append('paidDate', $('#paidDate').val() || '');
-            formData.append('partial_amount', $('#partial_amount').val() || '');
-            formData.append('specialNo', $('#specialNo').val() || '');
-            formData.append('Notes', $('#Notes').val() || '');
-            // Add product data as arrays
-            var productId = [];
-            var productUnitPri = [];
-            var productQty = [];
-            validRows.each(function() {
+            // Collect invoice items
+            let invoiceItems = [];
+            $('#invoiceItemsmain tr').each(function() {
                 const row = $(this);
-                productId.push(
-                    row.find('[name="productId"]').val()
-                );
-                productUnitPri.push(
-                    row.find('[name="productUnitPri"]').val()
-                );
-                productQty.push(
-                    row.find('[name="productQty"]').val()
-                );
-            });
-            
-            formData.append('productId', productId);
-            formData.append('productUnitPri',productUnitPri);
-            formData.append('productQty',productQty);
-            // Debug output
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
-
-            // Submit form
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    window.location.href = '/invoices/create';
-                },
-                error: function(xhr) {
-                    console.error('Error:', xhr.responseText);
+                const productId = row.find('[name="productId"]').val();
+                if (productId) {
+                    invoiceItems.push({
+                        product_id: parseInt(productId),
+                        unit_price: parseFloat(row.find('[name="productUnitPri"]').val()),
+                        quantity: parseFloat(row.find('[name="productQty"]').val()),
+                    });
                 }
             });
-        }); // end of submit form
+
+            // Build complete JSON data
+            const jsonData = {
+                client_id: parseInt($('#customerId').val()),
+                enterprise_id: parseInt($('#enterpriseSelect').val()) || 0,
+                creation_date: $('#creationDate').val(),
+                due_date: $('#paidDate').val() || null,
+                partial_amount: parseFloat($('#Partial_amount').val()) || 0,
+                total_amount: parseFloat($('#Partial_amount').val()) || 0,
+                special_invoice_no: $('#specialNo').val(),
+                description: $('#Notes').val(),
+                tax: parseFloat($('#Tax').val()) || 0,
+                payment_method: $('#Payment_method').val() || 'Cash', 
+                invoice_items: invoiceItems
+            };
+
+            // Debug output
+            console.log('Sending JSON:', jsonData);
+
+            fetch(form.attr('action'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.href = '/invoices/read';
+                    });
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+            });
+        });
 
     let rowCounter = "{{ rowCounter|default(0) }}";
         rowCounter = parseInt(rowCounter);
