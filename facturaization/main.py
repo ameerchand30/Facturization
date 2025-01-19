@@ -42,7 +42,7 @@ app.include_router(report_router)
 
 @app.get("/")
 async def dashboard(request: Request):
-    return templates.TemplateResponse("pages/dashboard.html", {"request": request})
+    return templates.TemplateResponse("pages/dashboard.html", {"request": request,"current_page": "dashboard"})
 
 if __name__ == "__main__":
     import uvicorn
