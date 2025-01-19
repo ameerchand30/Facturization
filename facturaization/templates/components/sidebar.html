@@ -27,27 +27,27 @@
                     <li class="{% if current_page == 'dashboard' %}active{% endif %}"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 </ul>
             </li>
-            <li class="{% if current_page == 'clients' %}active{% endif %}">
+            <li class="{% if current_page == 'view_clients' or current_page == 'add_client' %}active{% endif %}">
                 <a href="{{ url_for('read_clients') }}"><i class="fa fa-user"></i> <span class="nav-label">Client</span></a>
                 <ul class="nav nav-second-level">
                     <li class="{% if current_page == 'view_clients' %}active{% endif %}"><a href="{{ url_for('read_clients') }}">View Clients</a></li>
                     <li class="{% if current_page == 'add_client' %}active{% endif %}"><a href="{{ url_for('add_client_form') }}">Add Client</a></li>
                 </ul>
             </li>
-            <li class="{% if current_page == 'products' %}active{% endif %}">
+            <li class="{% if current_page == 'view_products' or current_page == 'add_product' %}active{% endif %}">
                 <a href="{{ url_for('read_products') }}"><i class="fa fa-shower"></i> <span class="nav-label">Product</span></a>
                 <ul class="nav nav-second-level">
                     <li class="{% if current_page == 'view_products' %}active{% endif %}"><a href="{{ url_for('read_products') }}">View Product</a></li>
                     <li class="{% if current_page == 'add_product' %}active{% endif %}"><a href="{{ url_for('add_product_form') }}">Add Product</a></li>
                 </ul>
             </li>
-            <li class="{% if current_page == 'view_enterprise' %}active{% endif %}">
+            <li class="{% if current_page == 'view_enterprise' or current_page == 'add_enterprise' %}active{% endif %}">
                 <a href="{{ url_for('add_enterprise_form') }}"><i class="fa fa-home"></i> <span class="nav-label">Enterprise</span></a>
                 <ul class="nav nav-second-level">
                     <li class="{% if current_page == 'view_enterprise' %}active{% endif %}"><a href="{{ url_for('read_enterprises') }}">View Enterprise</a></li>
                     <li class="{% if current_page == 'add_enterprise' %}active{% endif %}"><a href="{{ url_for('add_enterprise_form') }}">Add Enterprise</a></li>
                 </ul>
-            <li class="{% if current_page == 'invoice' %}active{% endif %}">
+            <li class="{% if current_page == 'create_invoices' or current_page == 'read_invoices' %}active{% endif %}">
                 <a href="layouts.html"><i class="fa fa-home"></i> <span class="nav-label">Invoices</span></a>
                 <ul class="nav nav-second-level">
                     <li class="{% if current_page == 'create_invoices' %}active{% endif %}"><a href="{{ url_for('create_invoice_form')}}">Create Invoice</a>

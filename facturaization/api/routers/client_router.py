@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
 from api.models.client import Clients
-from api.schemas.client import Client
+from api.schemas.client import Client,ClientCreate,ClientUpdate
 from fastapi.templating import Jinja2Templates
 
 templates = Jinja2Templates(directory="templates")
@@ -31,69 +31,39 @@ async def edit_client_form(client_id: int, request: Request, db: Session = Depen
         raise HTTPException(status_code=404, detail="Client not found")
     return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": client, "current_page": "edit_client"})
 # this is to add new Client 
-@client_router.post("/", response_class=RedirectResponse, name="create_client")
-async def create_client(
-    name: str = Form(...),
-    nationality: str = Form(None),
-    idNumber: str = Form(None),
-    gender: str = Form(None),
-    Billing_Street: str = Form(None),
-    City: str = Form(None),
-    Postal_Code: str = Form(None),
-    Country: str = Form(None),
-    email: str = Form(None),
-    phone: str = Form(None),
-    notes: str = Form(None),
-    db: Session = Depends(get_db)
-):
-    client_data = {
-        "name": name,
-        "nationality": nationality,
-        "idNumber": idNumber,
-        "gender": gender,
-        "Billing_Street": Billing_Street,
-        "City": City,
-        "Postal_Code": Postal_Code,
-        "Country": Country,
-        "email": email,
-        "phone": phone,
-        "notes": notes,
-    }
-    db_client = Clients(**client_data)
-    db.add(db_client)
-    db.commit()
-    db.refresh(db_client)
-    return RedirectResponse(url="/clients", status_code=303)
-
-@client_router.post("/edit/{client_id}", response_class=RedirectResponse, name="update_client")
+@client_router.post("/", response_model=dict, name="create_client")
+async def create_client(client: ClientCreate, db: Session = Depends(get_db)):
+    try:
+        client_data = client.model_dump()
+        db_client = Clients(**client_data)
+        db.add(db_client)
+        db.commit()
+        db.refresh(db_client)
+        return {"success": True, "message": "Product created successfully"}
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}
+# to update client
+@client_router.post("/update/{client_id}", response_model=dict, name="update_client")
 async def update_client(
     client_id: int,
-    name: str = Form(...),
-    nationality: str = Form(None),
-    idNumber: str = Form(None),
-    gender: str = Form(None),
-    Billing_Street: str = Form(None),
-    City: str = Form(None),
-    Postal_Code: str = Form(None),
-    Country: str = Form(None),
-    email: str = Form(None),
-    phone: str = Form(None),
-    notes: str = Form(None),
+    clinet: ClientUpdate,
     db: Session = Depends(get_db)
 ):
-    client_data = {
-        "name": name,
-        "nationality": nationality,
-        "idNumber": idNumber,
-        "gender": gender,
-        "Billing_Street": Billing_Street,
-        "City": City,
-        "Postal_Code": Postal_Code,
-        "Country": Country,
-        "email": email,
-        "phone": phone,
-        "notes": notes,
-    }
-    db.query(Clients).filter(Clients.id == client_id).update(client_data)
-    db.commit()
-    return RedirectResponse(url="/clients", status_code=303)
+    try:
+        client_data = clinet.model_dump()
+        db.query(Clients).filter(Clients.id == client_id).update(client_data)
+        db.commit()
+        return {"success": True, "message": "Client updated successfully"}
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}
+@client_router.delete("/delete/{client_id}",response_model=dict, name="delete_client")
+async def delete_client(client_id: int, db: Session = Depends(get_db)):
+    try:
+        db.query(Clients).filter(Clients.id == client_id).delete()
+        db.commit()
+        return {"success": True, "message": "Client Deleted successfully"}
+    except Exception as e:
+        print(e)
+        return {"success": False, "message": str(e)}

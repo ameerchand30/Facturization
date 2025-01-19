@@ -17,11 +17,11 @@ product_router = APIRouter(
 @product_router.get("/")
 async def read_products(request: Request,db: Session = Depends(get_db), name="read_products"):
     products = db.query(ProductModel).all()
-    return templates.TemplateResponse("pages/product.html", {"request": request, "products": products})
+    return templates.TemplateResponse("pages/product.html", {"request": request, "products": products, "current_page": "view_products"})
 # to add new product Form
 @product_router.get("/addProduct", name="add_product_form")
 async def addProduct(request: Request):
-    return templates.TemplateResponse("pages/addProduct.html", {"request": request})
+    return templates.TemplateResponse("pages/addProduct.html", {"request": request, "current_page": "add_product"})
 # to edit a existing product form
 @product_router.get("/edit/{product_id}", name="edit_product")
 async def edit_product(product_id: int, request: Request, db: Session = Depends(get_db)):

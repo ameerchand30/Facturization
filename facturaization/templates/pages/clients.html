@@ -148,7 +148,6 @@
     function toaster(msg = 'Please select only one client to edit or delete') {
         console.log('Toaster');
         setTimeout(function() {
-            
                 toastr.options = {
                     closeButton: true,
                     progressBar: true,
@@ -161,14 +160,10 @@
     }
 
     function handleDelete() {
-        if (!confirm('Are you sure you want to delete this client?')) {
-            return;
-        }
         if (selectedCount == 1) {
             const clientId = document.getElementById('delete-button').dataset.clientId;
             if (clientId) {
-                window.location.href = `/clients/delete/${clientId}`;
-                toaster('Client deleted successfully');
+                deleteClient(clientId)
             }
         } else {
             toaster('Please select only one client to delete');
@@ -185,6 +180,46 @@
         if (clientId) {
             window.location.href = `/clients/edit/${clientId}`;
         }
+    }
+// to delete a client 
+
+function deleteClient(client_id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/clients/delete/${client_id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Product has been deleted.',
+                            'success'
+                        ).then(() => {
+                            location.reload();  
+                        });
+                    } else {
+                        throw new Error(data.message);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire(
+                        'Error!',
+                        error.message || 'Something went wrong!',
+                        'error'
+                    );
+                });
+            }
+        });
     }
 </script>
 {% endblock %}

@@ -58,4 +58,48 @@
         </div>
     </div>
 {% endblock %}
+{% block extra_js %}
+<script>
+    $('form').on('submit', function(e) {
+            e.preventDefault();
+            const form = $(this);
+            const formData = new FormData(form[0]);
+            // Convert FormData to JSON object
+            const jsonData = Object.fromEntries(formData);
+            // Submit form using fetch
+            fetch(form.attr('action'), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                    form[0].reset();
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: error.message || 'Something went wrong!'
+                });
+            });
+        });
+</script>
+    
+{% endblock %}
 
