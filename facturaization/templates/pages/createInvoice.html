@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="enterpriseSelect">Select Enterprise</label>
-                                    <select id="enterpriseSelect" name="enterpriseId" class="form-control">
+                                    <select id="enterpriseSelect" name="enterpriseId" class="form-control" required>
                                         <option value="">Select an enterprise...</option>
                                             {% if enterprise_data %}
                                                 {% for enterprise in enterprise_data %}
@@ -68,11 +68,11 @@
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label>Invoice Date</label>
-                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="{{ invoice.creation_date if invoice else '2024-12-26' }}">
+                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="{{ invoice.creation_date.strftime('%Y-%m-%d') if invoice else '2024-12-26' }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Due Date</label>
-                                    <input type="date" id="paidDate" name="paidDate" class="form-control" value="{{ invoice.due_date if invoice else '2024-12-29' }}">
+                                    <input type="date" id="paidDate" name="paidDate" class="form-control" value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice else '2024-12-29' }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Partial/Deposit</label>
@@ -101,7 +101,7 @@
                                         </div>
                                         <div class="col-xs-6">
                                             <label>Payment Mode</label>
-                                            <select id="Payment_method" name="payment_method" class="form-control">
+                                            <select id="Payment_method" name="payment_method" class="form-control" required>
                                                 <option value="">-- Sélectionnez --</option> 
                                                 <option value="Cash">Cash</option>
                                                 <option value="Credit Card">Credit Card</option>
@@ -163,9 +163,9 @@
                     {% for item in invoice.invoice_items %}
                         <tr id="row_{{ loop.index }}">
                             <td>
-                                <div class="form-group">  
-                                    <input type="text" id="productSearch_{{ loop.index }}" name="productSearch" class="form-control productSearch" placeholder="{{ item.product.name if invoiceItems else 'P' }}" value="{{ item.product.name  }}">
-                                    <input type="hidden" id="productId_{{ loop.index }}" name="productId" value="{{ item.product_id  if invoiceItems else '' }}">
+                                <div class="form-group"> 
+                                    <input type="text" id="productSearch_{{ loop.index }}" name="productSearch" class="form-control productSearch" placeholder="{{ item.product.name if item else 'P' }}" value="{{ item.product.name  }}">
+                                    <input type="hidden" id="productId_{{ loop.index }}" name="productId" value="{{ item.product.id if item else '' }}">
                                 </div>
                             </td>
                             <td>
@@ -207,9 +207,9 @@
                 <div class="col-xs-12">
                     <div class="invoice-title">
                         <h2>
-                            <i class="fa fa-file-text-o"></i> FACTURE N0 366
+                            <i class="fa fa-file-text-o"></i> FACTURE N0 ���
                         </h2>
-                        <h3 class="pull-right">
+                        <h3 class="pull-right" id="currentDateTime">
                             <i class="fa fa-calendar"></i> 11 Decembre 2024
                         </h3>
                     </div>
@@ -319,6 +319,25 @@
     $(document).ready(function() {
         const customerData = JSON.parse(document.getElementById('customerData').textContent);
         const productData = JSON.parse(document.getElementById('productData').textContent);
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                };
+            const formattedDateTime = now.toLocaleString('fr-FR', options); 
+            document.getElementById('currentDateTime').textContent = formattedDateTime;
+            }   
+
+        updateDateTime(); // Initial display
+        setInterval(updateDateTime, 1000); // Update every second
+
         $('#customerSearch').autocomplete({
             source: Object.keys(customerData),
             select: function(event, ui) {
@@ -336,11 +355,10 @@
             $(this).closest('tr').remove();
             updateAllRows();
         });
-                // to submit de form data
-                $('form').on('submit', function(e) {
+         // to submit de form data
+        $('form').on('submit', function(e) {
             e.preventDefault();
             const form = $(this);
-            
             // Collect invoice items
             let invoiceItems = [];
             $('#invoiceItemsmain tr').each(function() {
@@ -354,7 +372,6 @@
                     });
                 }
             });
-
             // Build complete JSON data
             const jsonData = {
                 client_id: parseInt($('#customerId').val()),
@@ -369,10 +386,7 @@
                 payment_method: $('#Payment_method').val() || 'Cash', 
                 invoice_items: invoiceItems
             };
-
             // Debug output
-            console.log('Sending JSON:', jsonData);
-
             fetch(form.attr('action'), {
                 method: 'POST',
                 headers: {
