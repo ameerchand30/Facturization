@@ -1,34 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{% block title %}{% endblock %} - Lal Autos</title>
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    
-    
-    <!-- <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', path='/font-awesome/css/font-awesome.css') }}">  -->
     <link rel="stylesheet" href="{{ url_for('static', path='/css/client.css') }}">
-
     <!-- Toastr style -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/plugins/toastr/toastr.min.css') }}">
-   
-    
-    <!-- Custom CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', path='/css/animate.css') }}"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
-
-    <!-- Gritter -->
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/plugins/gritter/jquery.gritter.css') }}">  
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/animate.css') }}">
     {% block extra_css %}{% endblock %}
-
 </head>
 <body>
 
@@ -38,48 +21,29 @@
     {% endblock %}
     
     <!-- Mainly scripts -->
-    <script src="{{ url_for('static', path='/js/jquery-3.1.1.min.js') }}"></script>
-    <script src="{{ url_for('static', path='/js/bootstrap.min.js') }}"></script>
-    <script src="{{ url_for('static', path='/js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
-    <script src="{{ url_for('static', path='/js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/2.7.0/metisMenu.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.js"></script>
     
      <!-- Flot -->
-     <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.js') }}"></script>
-     <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.tooltip.min.js') }}"></script>
-     <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.spline.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.resize.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.pie.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.symbol.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/flot/jquery.flot.time.js') }}"></script>
-
-        <!-- Peity -->  
-        <script src="{{ url_for('static', path='/js/plugins/peity/jquery.peity.min.js') }}"></script>
-        
-
-        <!-- Custom and plugin javascript --> 
-        <script src="{{ url_for('static', path='/js/inspinia.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/pace/pace.min.js') }}"></script>
-
-        <!-- jQuery UI -->  
-        <script src="{{ url_for('static', path='/js/plugins/jquery-ui/jquery-ui.min.js') }}"></script>
-        
-        <!-- Jvectormap -->
-        <script src="{{ url_for('static', path='/js/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-
-
-        <!-- EayPIE --> 
-        <script src="{{ url_for('static', path='/js/plugins/easypiechart/jquery.easypiechart.js') }}"></script>
-        
-        <!-- Sparkline -->
-        <script src="{{ url_for('static', path='/js/plugins/sparkline/jquery.sparkline.min.js') }}"></script>
-
-        <script src="{{ url_for('static', path='/js/plugins/toastr/toastr.min.js') }}"></script>
-        <script src="{{ url_for('static', path='/js/plugins/gritter/jquery.gritter.min.js') }}"></script>
-
-        <!-- to show alert i have added this -->
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.tooltip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.spline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.resize.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.pie.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.symbol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.time.js"></script>
+  
+    <!-- Custom and plugin javascript --> 
+    <script src="{{ url_for('static', path='/js/inspinia.js') }}"></script>
+    <!-- <script src="{{ url_for('static', path='/js/plugins/pace/pace.min.js') }}"></script> -->
+    <!-- EayPIE --> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/easy-pie-chart/2.1.6/jquery.easypiechart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> 
+    <!-- to show alert i have added this -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
        
     {% block extra_js %} {% endblock %}
-</body>
+</body> 
 </html>
