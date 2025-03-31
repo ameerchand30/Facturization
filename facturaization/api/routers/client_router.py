@@ -39,7 +39,7 @@ async def create_client(client: ClientCreate, db: Session = Depends(get_db)):
         db.add(db_client)
         db.commit()
         db.refresh(db_client)
-        return {"success": True, "message": "Product created successfully"}
+        return {"success": True, "message": "Client created successfully"}
     except Exception as e:
         print(e)
         return {"success": False, "message": str(e)}

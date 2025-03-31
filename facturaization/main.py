@@ -41,6 +41,9 @@ app.include_router(report_router)
 
 
 @app.get("/")
+async def root(request: Request):
+    return templates.TemplateResponse("pages/LandingPage/landing-page.html", {"request": request})
+@app.get("/dashboard")
 async def dashboard(request: Request):
     return templates.TemplateResponse("pages/dashboard.html", {"request": request,"current_page": "dashboard"})
 
