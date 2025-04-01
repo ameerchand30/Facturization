@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Setting(BaseSettings):
+    host_name: str
+    host_port: str
     database_hostname: str
     database_port: str
     database_password: str
