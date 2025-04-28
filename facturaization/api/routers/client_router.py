@@ -6,6 +6,12 @@ from database import get_db
 from api.models.client import Clients
 from api.schemas.client import Client,ClientCreate,ClientUpdate
 from fastapi.templating import Jinja2Templates
+from api.dependencies.auth import get_current_user, require_user_type
+from api.models.public.user import UserType
+
+# to add client with enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
 
 templates = Jinja2Templates(directory="templates")
 
@@ -16,9 +22,9 @@ client_router = APIRouter(
 )
 # to show all clinets form
 @client_router.get("/", response_class=HTMLResponse , name="read_clients")
-async def read_clients(request: Request, db: Session = Depends(get_db)):
-    clients = db.query(Clients).all()
-    return templates.TemplateResponse("pages/clients.html", {"request": request, "clients": clients, "current_page": "view_clients"})
+async def read_clients(request: Request, db: Session = Depends(get_db),user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
+    clients = db.query(Clients).filter(Clients.enterprise_profile_id == enterprise_profile.id).all()
+    return templates.TemplateResponse("pages/clients.html", {"request": request, "clients": clients, "current_page": "view_clients","user": user})
 # to add Client form
 @client_router.get("/add", response_class=HTMLResponse, name="add_client_form")
 async def add_client_form(request: Request):
@@ -32,9 +38,10 @@ async def edit_client_form(client_id: int, request: Request, db: Session = Depen
     return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": client, "current_page": "edit_client"})
 # this is to add new Client 
 @client_router.post("/", response_model=dict, name="create_client")
-async def create_client(client: ClientCreate, db: Session = Depends(get_db)):
+async def create_client(client: ClientCreate, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)),enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     try:
         client_data = client.model_dump()
+        client_data["enterprise_profile_id"] = enterprise_profile.id
         db_client = Clients(**client_data)
         db.add(db_client)
         db.commit()

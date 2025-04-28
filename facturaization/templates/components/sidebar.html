@@ -10,9 +10,15 @@
                     <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Ameer Chand</strong>
                      </span> <span class="text-muted text-xs block">Chand Director <b class="caret"></b></span> </span> </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a href="profile.html">Profile</a></li>
-                        <li><a href="contacts.html">Contacts</a></li>
-                        <li><a href="mailbox.html">Mailbox</a></li>
+                        <li class="dropdown-header"></li>
+                        <li>
+                            <div class="dropdown-profile-info">
+                                <p class="email-text">{{ user.email }}</p>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="{{ url_for('enterprise_profile')}}">Profile</a></li>
+                        <li><a href="https://mail.google.com/mail/u/0/#inbox">Mailbox</a></li>
                         <li class="divider"></li>
                         <li><a href="login.html">Logout</a></li>
                     </ul>

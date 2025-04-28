@@ -26,13 +26,37 @@
                 <div class="row">
                     <div class="company-details">
                     <div class="col-xs-6">
-                        <div class="company-name">LAL MECANIQUE</div>
+                        <!-- Company Logo -->
+                        <div class="company-logo mb-3">
+                            {% if enterprise_profile.logo %}
+                                <img src="{{ url_for('static', path='img/enterprise_profile_images/' + enterprise_profile.logo) }}" 
+                                    alt="{{ enterprise_profile.company_name }}" 
+                                    class="img-fluid company-logo">
+                            {% endif %}
+                        </div>
+
+                        <div class="company-name">{{ enterprise_profile.company_name }}</div>
                         <address>
-                            <i class="fa fa-user"></i> M. Krishan kishwer E.l.<br>
-                            <i class="fa fa-map-marker"></i> 73 B Rue de Paris<br>
-                            95400 villiers le bel<br>
-                            <i class="fa fa-building"></i> RCS : 885269977<br>
-                            <i class="fa fa-phone"></i> Tel : 0751151997
+                            {% if enterprise_profile.name %}
+                                <i class="fa fa-user"></i> {{ enterprise_profile.name }}<br>
+                            {% endif %}
+                            
+                            {% if enterprise_profile.address %}
+                                <i class="fa fa-map-marker"></i> {{ enterprise_profile.address }}<br>
+                                {{ enterprise_profile.postal_code }} {{ enterprise_profile.city }}<br>
+                            {% endif %}
+                            
+                            {% if enterprise_profile.registration_number %}
+                                <i class="fa fa-building"></i> RCS : {{ enterprise_profile.registration_number }}<br>
+                            {% endif %}
+                            
+                            {% if enterprise_profile.phone %}
+                                <i class="fa fa-phone"></i> Tel : {{ enterprise_profile.phone }}
+                            {% endif %}
+                            
+                            {% if enterprise_profile.email %}
+                                <br><i class="fa fa-envelope"></i> {{ enterprise_profile.email }}
+                            {% endif %}
                         </address>
                     </div>
                     </div>

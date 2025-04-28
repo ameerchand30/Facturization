@@ -11,6 +11,12 @@ from api.models.invoice import Invoice, InvoiceItem
 from api.schemas.invoice import InvoiceCreate, InvoiceUpdate, InvoiceItemCreate,Invoice as InvoiceSchema
 from api.routers.crud import crud_invoice
 from fastapi.templating import Jinja2Templates
+from api.dependencies.auth import get_current_user, require_user_type
+from api.models.public.user import UserType
+
+# to add client with enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
 
 templates = Jinja2Templates(directory="templates")
 
@@ -21,30 +27,32 @@ invoice_router = APIRouter(
 )
 # to show enterprise and customer data while creating inovice
 @invoice_router.get("/create", response_class=HTMLResponse, name="create_invoice_form")
-async def create_invoice_form(request: Request, db: Session = Depends(get_db)):
-    customers = db.query(Clients).all()
-    products = db.query(ProductModel).all()
-    enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).all()]
+async def create_invoice_form(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
+    customers = db.query(Clients).filter(Clients.enterprise_profile_id == enterprise_profile.id).all()
+    products = db.query(ProductModel).filter(ProductModel.enterprise_profile_id == enterprise_profile.id).all()
+    enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).filter(Enterprise.enterprise_profile_id == enterprise_profile.id).all()]
     customer_data = {customer.name: {"id": customer.id,"email":customer.email } for customer in customers}
     product_data = {product.name: {"id": product.id, "unit_price": product.price,"description":product.description} for product in products}
-    return templates.TemplateResponse("pages/createInvoice.html", {"request": request, "customer_data": customer_data, "product_data": product_data, "enterprise_data": enterprise_data, "current_page": "create_invoices"})
+
+    return templates.TemplateResponse("pages/createInvoice.html", {"request": request,
+    "enterprise_profile": enterprise_profile, "customer_data": customer_data, "product_data": product_data, "enterprise_data": enterprise_data, "current_page": "create_invoices","user": user, "mode": "create", "rowCounter": 1}) # Add rowCounter to the context
 
 # to show invoices
 @invoice_router.get("/read", response_class=HTMLResponse, name="read_invoices")
-def read_invoices(request: Request, db: Session = Depends(get_db)):
-    invoices = crud_invoice.get_invoices(db)
-    return templates.TemplateResponse("pages/invoices.html", {"request": request, "invoices": invoices, "current_page": "read_invoices"})
+def read_invoices(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
+    invoices = crud_invoice.get_invoices(db,enterprise_profile)
+    return templates.TemplateResponse("pages/invoices.html", {"request": request, "invoices": invoices, "current_page": "read_invoices","user": user})
 
 # to edit the invocies form
 @invoice_router.get("/edit/{invoice_id}", response_class=HTMLResponse, name="edit_invoice_form")
-async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Depends(get_db)):
+async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     invoice = crud_invoice.get_invoice(db=db, invoice_id=invoice_id)
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
     
-    customers = db.query(Clients).all()
-    products = db.query(ProductModel).all()
-    enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).all()] # Note method
+    customers = db.query(Clients).filter(Clients.enterprise_profile_id == enterprise_profile.id).all()
+    products = db.query(ProductModel).filter(ProductModel.enterprise_profile_id == enterprise_profile.id).all()
+    enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).filter(Enterprise.enterprise_profile_id == enterprise_profile.id).all()] # Note method
     customer_data = {customer.name: {"id": customer.id,"email":customer.email } for customer in customers} # Another method 
     product_data = {product.name: {"id": product.id, "unit_price": product.price,"description":product.description} for product in products}
     
@@ -58,15 +66,18 @@ async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Dep
             "enterprise_data": enterprise_data,
             "current_page": "create_invoices",
             "mode": "edit",
-            "rowCounter": len(invoice.invoice_items)  # Add rowCounter
+            "rowCounter": len(invoice.invoice_items),  # Add rowCounter
+            "user": user,
+            "enterprise_profile": enterprise_profile
+            
         }
     )
  
 # to create new invoice
 @invoice_router.post("/", response_model=dict, name="create_invoice")
-def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db)):
+def create_invoice(invoice: InvoiceCreate, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     try:
-        crud_invoice.create_invoice(db=db, db_invoice=invoice)
+        crud_invoice.create_invoice(db=db, db_invoice=invoice, enterprise_profile=enterprise_profile)
         return {"success": True, "message": "Client created successfully"}
     except Exception as e:
         print(e)

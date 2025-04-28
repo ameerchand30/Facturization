@@ -8,6 +8,8 @@ from api.routers.product_router import product_router
 from api.routers.enterprise_router import enterprise_router
 from api.routers.invoice_router import invoice_router
 from api.routers.report_generate import report_router
+from api.routers.dashboard_routes import dashboard_router
+from api.routers.enterprise_profile_router import enterprise_profile_router
 # models
 from api.models.client import Clients
 from api.models.enterprise import Enterprise
@@ -38,6 +40,8 @@ app.include_router(product_router)
 app.include_router(enterprise_router)
 app.include_router(invoice_router)
 app.include_router(report_router)
+app.include_router(dashboard_router)
+app.include_router(enterprise_profile_router)
 
 
 @app.get("/")

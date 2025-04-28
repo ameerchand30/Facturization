@@ -11,6 +11,10 @@ from api.schemas.client import Client
 from api.models.enterprise import Enterprise
 from fastapi.templating import Jinja2Templates
 
+# to add Enterprise with enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
+
 templates = Jinja2Templates(directory="templates")
 
 enterprise_router = APIRouter(
@@ -21,9 +25,9 @@ enterprise_router = APIRouter(
 
 # show the enterprise page
 @enterprise_router.get("/", response_class=HTMLResponse, name="read_enterprises")
-def read_enterprises(request: Request ,skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    enterprises = db.query(Enterprise, Clients).join(Clients, Enterprise.client_id == Clients.id).offset(skip).limit(limit).all()
-    return templates.TemplateResponse("pages/enterprise.html", {"request": request, "enterprises": enterprises, "current_page": "view_enterprise"})
+def read_enterprises(request: Request ,skip: int = 0, limit: int = 100, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)),enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
+    enterprises = db.query(Enterprise, Clients).join(Clients).filter(Enterprise.enterprise_profile_id == enterprise_profile.id,Clients.enterprise_profile_id == enterprise_profile.id).all()
+    return templates.TemplateResponse("pages/enterprise.html", {"request": request, "enterprises": enterprises, "current_page": "view_enterprise", "user": user})
 # show the enterprise Form page with the customer data
 @enterprise_router.get("/add", response_class=HTMLResponse, name="add_enterprise_form")
 async def add_enterprise_form(request: Request, db: Session = Depends(get_db)):
@@ -33,10 +37,11 @@ async def add_enterprise_form(request: Request, db: Session = Depends(get_db)):
 
 # create enterprise to the database
 @enterprise_router.post("/", response_model=dict, name="create_enterprise")
-def create_enterprise( enterprise : EnterpriseCreate, db: Session = Depends(get_db)):
+def create_enterprise( enterprise : EnterpriseCreate, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)),enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     # print(enterprise.__dict__)
     try:
         enterprise_dict = enterprise.model_dump()
+        enterprise_dict["enterprise_profile_id"] = enterprise_profile.id
         db_enterprise = Enterprise(**enterprise_dict)
         crud_enterprise.create_enterprise(db=db, enterprise=db_enterprise)
         return {"success": True, "message": "Enterprise created successfully"}

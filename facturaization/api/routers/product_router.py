@@ -7,6 +7,10 @@ from api.models.product import ProductModel
 from api.schemas.product import Product, ProductCreate, ProductUpdate
 from fastapi.templating import Jinja2Templates
 
+# to add product with enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
+
 templates = Jinja2Templates(directory="templates")
 
 product_router = APIRouter(
@@ -15,9 +19,9 @@ product_router = APIRouter(
 ) 
 # to read all products
 @product_router.get("/")
-async def read_products(request: Request,db: Session = Depends(get_db), name="read_products"):
-    products = db.query(ProductModel).all()
-    return templates.TemplateResponse("pages/product.html", {"request": request, "products": products, "current_page": "view_products"})
+async def read_products(request: Request,db: Session = Depends(get_db), name="read_products", user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
+    products = db.query(ProductModel).filter(ProductModel.enterprise_profile_id == enterprise_profile.id).all()
+    return templates.TemplateResponse("pages/product.html", {"request": request, "products": products, "current_page": "view_products", "user": user})
 # to add new product Form
 @product_router.get("/addProduct", name="add_product_form")
 async def addProduct(request: Request):
@@ -32,9 +36,10 @@ async def edit_product(product_id: int, request: Request, db: Session = Depends(
 
 # to receive new post request to store a new product
 @product_router.post("/", response_model=dict, name="create_product")
-async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+async def create_product(product: ProductCreate, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     try:
         product_dict = product.model_dump()
+        product_dict["enterprise_profile_id"] = enterprise_profile.id
         db_product = ProductModel(**product_dict)
         db.add(db_product)
         db.commit()

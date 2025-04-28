@@ -14,6 +14,13 @@ from fastapi.templating import Jinja2Templates
 from weasyprint import HTML,CSS
 from pathlib import Path
 from bs4 import BeautifulSoup
+from api.dependencies.auth import get_current_user, require_user_type
+from api.models.public.user import UserType
+
+# to add client with enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -24,11 +31,15 @@ report_router = APIRouter(
 )
 
 @report_router.get("/invoiceNumber/{invoice_id}", response_class=HTMLResponse, name="getReportForm")
-async def create_report_form(invoice_id: int  ,request: Request, db: Session = Depends(get_db)):
+async def create_report_form(invoice_id: int  ,request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     invoice_data = get_invoice_details(db, invoice_id)
+    print("enterprise_profile in get",enterprise_profile)
     return templates.TemplateResponse("pages/generateReport.html", {
         "request": request,
-        **invoice_data
+        **invoice_data,
+        "user": user,
+        "current_page": "generate_report",
+        "enterprise_profile": enterprise_profile
     })
 
 # to genraet PDF
@@ -36,7 +47,9 @@ async def create_report_form(invoice_id: int  ,request: Request, db: Session = D
 async def generate_pdf(
     invoice_id: int, 
     request: Request, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_user_type(UserType.ENTERPRISE)),
+    enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile) # Add this line to get the enterprise profile
 ):
     try:
         invoice_data = get_invoice_details(db, invoice_id)
@@ -45,7 +58,8 @@ async def generate_pdf(
             {
                 "request": request,
                 **invoice_data,
-                "pdf_mode": True
+                "pdf_mode": True,
+                "enterprise_profile": enterprise_profile,  # Pass the enterprise profile to the template
             }
         ).body.decode()
         # Get CSS file path
