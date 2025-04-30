@@ -32,10 +32,10 @@ def read_enterprises(request: Request ,skip: int = 0, limit: int = 100, db: Sess
     return templates.TemplateResponse("pages/enterprise.html", {"request": request, "enterprises": enterprises, "current_page": "view_enterprise", "user": user})
 # show the enterprise Form page with the customer data
 @enterprise_router.get("/add", response_class=HTMLResponse, name="add_enterprise_form")
-async def add_enterprise_form(request: Request, db: Session = Depends(get_db)):
+async def add_enterprise_form(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
     customers = db.query(Clients).all()
     customer_data = {customer.name: {"customer_id": customer.id,"email": customer.email,"notes": customer.notes} for customer in customers}
-    return templates.TemplateResponse("pages/addEnterprise.html", {"request": request,"customer_data": customer_data, "customers": customers, "current_page": "add_enterprise"})
+    return templates.TemplateResponse("pages/addEnterprise.html", {"request": request,"customer_data": customer_data, "customers": customers, "current_page": "add_enterprise", "user": user})
 
 # create enterprise to the database
 @enterprise_router.post("/", response_model=dict, name="create_enterprise")
@@ -53,13 +53,13 @@ def create_enterprise( enterprise : EnterpriseCreate, db: Session = Depends(get_
 
 # link the edit enterprise page
 @enterprise_router.get("/edit/{enterprise_id}", response_class=HTMLResponse, name="edit_enterprise_form")
-def edit_enterprise_form(enterprise_id: int, request: Request, db: Session = Depends(get_db)):
+def edit_enterprise_form(enterprise_id: int, request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
     enterprise = crud_enterprise.get_enterprise(db, enterprise_id=enterprise_id)
     if enterprise is None:
         raise HTTPException(status_code=404, detail="Enterprise not found")
     customers = db.query(Clients).all()
     customer_data = {customer.name: {"customer_id": customer.id,"email": customer.email,"notes": customer.notes} for customer in customers}
-    return templates.TemplateResponse("pages/addEnterprise.html", {"request": request, "enterprise": enterprise, "customer_data": customer_data, "customers": customers, "current_page": "edit_enterprise"})
+    return templates.TemplateResponse("pages/addEnterprise.html", {"request": request, "enterprise": enterprise, "customer_data": customer_data, "customers": customers, "current_page": "edit_enterprise", "user": user})
 
 # update enterprise to the database
 @enterprise_router.post("/update/{enterprise_id}", response_model=dict, name="update_enterprise")

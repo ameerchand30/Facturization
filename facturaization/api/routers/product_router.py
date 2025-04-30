@@ -26,15 +26,15 @@ async def read_products(request: Request,db: Session = Depends(get_db), name="re
     return templates.TemplateResponse("pages/product.html", {"request": request, "products": products, "current_page": "view_products", "user": user})
 # to add new product Form
 @product_router.get("/addProduct", name="add_product_form")
-async def addProduct(request: Request):
-    return templates.TemplateResponse("pages/addProduct.html", {"request": request, "current_page": "add_product"})
+async def addProduct(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
+    return templates.TemplateResponse("pages/addProduct.html", {"request": request, "current_page": "add_product", "user": user})
 # to edit a existing product form
 @product_router.get("/edit/{product_id}", name="edit_product")
-async def edit_product(product_id: int, request: Request, db: Session = Depends(get_db)):
+async def edit_product(product_id: int, request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
     product = db.query(ProductModel).filter(ProductModel.id == product_id).first()
     if product is None:
         raise HTTPException(status_code=404, detail="Product not found")
-    return templates.TemplateResponse("pages/addProduct.html", {"request": request, "product": product})
+    return templates.TemplateResponse("pages/addProduct.html", {"request": request, "product": product, "current_page": "edit_product", "user": user})
 
 # to receive new post request to store a new product
 @product_router.post("/", response_model=dict, name="create_product")

@@ -27,15 +27,15 @@ async def read_clients(request: Request, db: Session = Depends(get_db),user: dic
     return templates.TemplateResponse("pages/clients.html", {"request": request, "clients": clients, "current_page": "view_clients","user": user})
 # to add Client form
 @client_router.get("/add", response_class=HTMLResponse, name="add_client_form")
-async def add_client_form(request: Request):
-    return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": None, "current_page": "add_client"})
+async def add_client_form(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
+    return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": None, "current_page": "add_client","user": user})
 # when a Enterpenieur Click on Edit 
 @client_router.get("/edit/{client_id}", response_class=HTMLResponse, name="edit_client_form")
-async def edit_client_form(client_id: int, request: Request, db: Session = Depends(get_db)):
+async def edit_client_form(client_id: int, request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
     client = db.query(Clients).filter(Clients.id == client_id).first()
     if client is None:
         raise HTTPException(status_code=404, detail="Client not found")
-    return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": client, "current_page": "edit_client"})
+    return templates.TemplateResponse("pages/addClient.html", {"request": request, "client": client, "current_page": "edit_client","user": user})
 # this is to add new Client 
 @client_router.post("/", response_model=dict, name="create_client")
 async def create_client(client: ClientCreate, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)),enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
@@ -55,7 +55,8 @@ async def create_client(client: ClientCreate, db: Session = Depends(get_db), use
 async def update_client(
     client_id: int,
     clinet: ClientUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    
 ):
     try:
         client_data = clinet.model_dump()
