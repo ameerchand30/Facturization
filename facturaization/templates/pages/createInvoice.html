@@ -5,6 +5,16 @@
     {% block extra_css %}
         <link rel="stylesheet" href="{{ url_for('static', path='/css/client.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', path='/css/facture.css') }}">
+        <!-- Add jQuery UI CSS -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <style>
+            .ui-autocomplete {
+                max-height: 200px;
+                overflow-y: auto;
+                overflow-x: hidden;
+                z-index: 1000;
+            }
+        </style>
     {% endblock %}
 
 {% block content %}
@@ -347,7 +357,7 @@
 <script id="productData" type="application/json">
     {{ product_data | tojson }}
 </script>
-
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
     $(document).ready(function() {
