@@ -11,5 +11,8 @@ class ProductModel(Base):
     price = Column(Float, nullable=True)
     description = Column(String, nullable=True)
     created_at = Column(DateTime, default=func.now())
-    invoice_items = relationship("InvoiceItem", back_populates="product")
+    enterprise_profile_id = Column(Integer, ForeignKey('enterprise_profiles.id'))
     
+    # Relationships
+    enterprise_profile = relationship("EnterpriseProfile", back_populates="products")
+    invoice_items = relationship("InvoiceItem", back_populates="product")

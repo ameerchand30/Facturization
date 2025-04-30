@@ -27,6 +27,10 @@ class Invoice(Base):
     description = Column(String)
     tax = Column(Float)
     payment_method = Column(SQLAEnum(PaymentMethodEnum))
+    enterprise_profile_id = Column(Integer, ForeignKey('enterprise_profiles.id'))
+
+    # Relationships
+    enterprise_profile = relationship("EnterpriseProfile", back_populates="invoices")
     client = relationship("Clients", back_populates="invoices")
     enterprises = relationship("Enterprise", back_populates="invoices")
     invoice_items = relationship("InvoiceItem", back_populates="invoice", cascade="all, delete-orphan")
