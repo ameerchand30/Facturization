@@ -10,6 +10,7 @@ from api.routers.invoice_router import invoice_router
 from api.routers.report_generate import report_router
 from api.routers.dashboard_routes import dashboard_router
 from api.routers.enterprise_profile_router import enterprise_profile_router
+from api.routers.auth_router import auth
 # models
 from api.models.client import Clients
 from api.models.enterprise import Enterprise
@@ -34,7 +35,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # Include routers
-# app.include_router(auth)
+app.include_router(auth)
 app.include_router(client_router)
 app.include_router(product_router)
 app.include_router(enterprise_router)

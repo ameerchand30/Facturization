@@ -34,6 +34,7 @@ async def logout(request: Request):
 async def login(request: Request, provider: str, user_type: UserType):
     # Store user_type in session for callback
     request.session['user_type'] = user_type
+    print(f"User type: {user_type}")
     
     # Get OAuth client
     client = getattr(oauth, provider, None)
