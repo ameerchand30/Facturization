@@ -6,6 +6,8 @@ from database import get_db
 from api.models.product import ProductModel
 from api.schemas.product import Product, ProductCreate, ProductUpdate
 from fastapi.templating import Jinja2Templates
+from api.dependencies.auth import get_current_user, require_user_type
+from api.models.public.user import UserType
 
 # to add product with enterprise profile
 from api.dependencies.enterprise import get_enterprise_profile
