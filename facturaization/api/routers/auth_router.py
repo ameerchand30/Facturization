@@ -1,12 +1,24 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi.responses import RedirectResponse
+from sqlalchemy.orm import Session
+from configDict import Setting, oauth
+from api.models.public.user import UserType, User
+from database import get_db
+from datetime import datetime, timedelta 
+import jwt
 
-auth = APIRouter()
 
-@auth.get("/")
-async def read_root(request: Request):
-    return templates.TemplateResponse("login/login.html", {"request": request})
+from fastapi.templating import Jinja2Templates
 
-@auth.get("/register")
+templates = Jinja2Templates(directory="templates")
+
+auth_router = APIRouter()
+settings = Setting()
+
+@auth_router.get("/login")
+async def login(request: Request):
+    return templates.TemplateResponse("pages/User/login/login.html", {"request": request})
+@auth_router.get("/register")
 async def register(request: Request):
     return templates.TemplateResponse("pages/User/login/register.html", {"request": request})
 @auth_router.get("/logout")
