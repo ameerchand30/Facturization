@@ -54,6 +54,7 @@ app.include_router(dashboard_router)
 app.include_router(enterprise_profile_router)
 
 
+
 @app.get("/")
 async def root(request: Request):
     return templates.TemplateResponse("pages/User/LandingPage/landing-page.html", {"request": request})
