@@ -25,7 +25,6 @@ from database import Base, engine
 # Create the database tables   
 Base.metadata.create_all(bind=engine)
 
-
 # Create the FastAPI app
 app = FastAPI()
 
