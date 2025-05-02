@@ -78,11 +78,11 @@
                             <div class="panel-body">
                                 <div class="form-group">
                                     <label>Invoice Date</label>
-                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="{{ invoice.creation_date.strftime('%Y-%m-%d') if invoice else '2024-12-26' }}">
+                                    <input type="date" id="creationDate" name="creationDate" class="form-control" value="{{ invoice.creation_date.strftime('%Y-%m-%d') if invoice else today.strftime('%Y-%m-%d')}}">
                                 </div>
                                 <div class="form-group">
                                     <label>Due Date</label>
-                                    <input type="date" id="paidDate" name="paidDate" class="form-control" value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice else '2024-12-29' }}">
+                                    <input type="date" id="paidDate" name="paidDate" class="form-control" value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice else today.strftime('%Y-%m-%d') }}">
                                 </div>
                                 <div class="form-group">
                                     <label>Partial/Deposit</label>

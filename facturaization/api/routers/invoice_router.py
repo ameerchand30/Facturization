@@ -13,6 +13,8 @@ from api.routers.crud import crud_invoice
 from fastapi.templating import Jinja2Templates
 from api.dependencies.auth import get_current_user, require_user_type
 from api.models.public.user import UserType
+from datetime import datetime
+from zoneinfo import ZoneInfo  # For Python 3.9+
 
 # to add client with enterprise profile
 from api.dependencies.enterprise import get_enterprise_profile
@@ -29,13 +31,15 @@ invoice_router = APIRouter(
 @invoice_router.get("/create", response_class=HTMLResponse, name="create_invoice_form")
 async def create_invoice_form(request: Request, db: Session = Depends(get_db), user: dict = Depends(require_user_type(UserType.ENTERPRISE)), enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)):
     customers = db.query(Clients).filter(Clients.enterprise_profile_id == enterprise_profile.id).all()
+    # Get the current date and time in the local timezone
+    local_time = datetime.now(ZoneInfo("Europe/Paris"))
     products = db.query(ProductModel).filter(ProductModel.enterprise_profile_id == enterprise_profile.id).all()
     enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).filter(Enterprise.enterprise_profile_id == enterprise_profile.id).all()]
     customer_data = {customer.name: {"id": customer.id,"email":customer.email } for customer in customers}
     product_data = {product.name: {"id": product.id, "unit_price": product.price,"description":product.description} for product in products}
 
     return templates.TemplateResponse("pages/createInvoice.html", {"request": request,
-    "enterprise_profile": enterprise_profile, "customer_data": customer_data, "product_data": product_data, "enterprise_data": enterprise_data, "current_page": "create_invoices","user": user, "mode": "create", "rowCounter": 1}) # Add rowCounter to the context
+    "enterprise_profile": enterprise_profile, "customer_data": customer_data, "product_data": product_data, "enterprise_data": enterprise_data, "current_page": "create_invoices","user": user, "mode": "create", "rowCounter": 1,"today": local_time}) # Add rowCounter to the context
 
 # to show invoices
 @invoice_router.get("/read", response_class=HTMLResponse, name="read_invoices")
@@ -49,7 +53,7 @@ async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Dep
     invoice = crud_invoice.get_invoice(db=db, invoice_id=invoice_id)
     if not invoice:
         raise HTTPException(status_code=404, detail="Invoice not found")
-    
+    local_time = datetime.now(ZoneInfo("Europe/Paris"))
     customers = db.query(Clients).filter(Clients.enterprise_profile_id == enterprise_profile.id).all()
     products = db.query(ProductModel).filter(ProductModel.enterprise_profile_id == enterprise_profile.id).all()
     enterprise_data = [{"id": enterprise.id, "name": enterprise.name} for enterprise in db.query(Enterprise).filter(Enterprise.enterprise_profile_id == enterprise_profile.id).all()] # Note method
@@ -68,7 +72,8 @@ async def edit_invoice_form(invoice_id: int, request: Request, db: Session = Dep
             "mode": "edit",
             "rowCounter": len(invoice.invoice_items),  # Add rowCounter
             "user": user,
-            "enterprise_profile": enterprise_profile
+            "enterprise_profile": enterprise_profile,
+            "today": local_time  # Add the current date to the context
             
         }
     )

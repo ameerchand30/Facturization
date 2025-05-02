@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from datetime import datetime
+from sqlalchemy import func,cast, Date
+from typing import Optional, List, Dict, Any
+from datetime import datetime,timedelta
 from database import get_db
 from api.models.invoice import Invoice
 from api.dependencies.auth import get_current_user, require_user_type
@@ -40,17 +41,18 @@ async def enterprise_dashboard(
     enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)
 ):
     # Get date ranges based on period
-    today = datetime.now().date()
+    today = datetime.now()
     if period == "today":
-        start_date = today
-        end_date = today
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = start_date - timedelta(days=1)
     elif period == "monthly":
-        start_date = today.replace(day=1)
-        end_date = today
+        start_date = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = (start_date - timedelta(days=1)).replace(day=1)
     else:  # annual
-        start_date = today.replace(month=1, day=1)
-        end_date = today
-
+        start_date = today.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        end_date = datetime(today.year - 1, 1, 1)
+    print('start date',start_date)
+    print('end date',end_date)  
     # Calculate metrics
     metrics = db.query(
         func.count(Invoice.id).label('total_orders'),
@@ -59,7 +61,6 @@ async def enterprise_dashboard(
         Invoice.enterprise_profile_id == enterprise_profile.id,
         Invoice.creation_date.between(start_date, end_date)
     ).first()
-
     # Get chart data
     chart_data = db.query(
         func.date(Invoice.creation_date).label('date'),
