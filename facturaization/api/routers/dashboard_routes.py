@@ -3,6 +3,17 @@ from api.models.public.user import UserType
 from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 
+from sqlalchemy.orm import Session
+from sqlalchemy import func
+from datetime import datetime
+from database import get_db
+from api.models.invoice import Invoice
+from api.dependencies.auth import get_current_user, require_user_type
+
+# to show dashboard with each enterprise profile
+from api.dependencies.enterprise import get_enterprise_profile
+from api.models.public.user import EnterpriseProfile
+
 templates = Jinja2Templates(directory="templates")
 
 dashboard_router = APIRouter()
@@ -21,17 +32,78 @@ async def client_dashboard(request: Request, user: dict = Depends(require_user_t
 
 # Enterprise dashboard
 @dashboard_router.get("/enterprise/dashboard", name="enterprise_dashboard")
-async def enterprise_dashboard( request: Request,  user: dict = Depends(require_user_type(UserType.ENTERPRISE))):
+async def enterprise_dashboard(
+    request: Request,
+    period: str = "monthly",
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_user_type(UserType.ENTERPRISE)),
+    enterprise_profile: EnterpriseProfile = Depends(get_enterprise_profile)
+):
+    # Get date ranges based on period
+    today = datetime.now().date()
+    if period == "today":
+        start_date = today
+        end_date = today
+    elif period == "monthly":
+        start_date = today.replace(day=1)
+        end_date = today
+    else:  # annual
+        start_date = today.replace(month=1, day=1)
+        end_date = today
+
+    # Calculate metrics
+    metrics = db.query(
+        func.count(Invoice.id).label('total_orders'),
+        func.sum(Invoice.total_amount).label('total_income')
+    ).filter(
+        Invoice.enterprise_profile_id == enterprise_profile.id,
+        Invoice.creation_date.between(start_date, end_date)
+    ).first()
+
+    # Get chart data
+    chart_data = db.query(
+        func.date(Invoice.creation_date).label('date'),
+        func.count(Invoice.id).label('orders'),
+        func.sum(Invoice.total_amount).label('income')
+    ).filter(
+        Invoice.enterprise_profile_id == enterprise_profile.id,
+        Invoice.creation_date.between(start_date, end_date)
+    ).group_by(
+        func.date(Invoice.creation_date)
+    ).all()
+
+    # Prepare the response data
+    response_data = {
+        "enterprise": enterprise_profile,
+        "metrics": {
+            "total_orders": metrics.total_orders or 0,
+            "total_income": float(metrics.total_income or 0),
+            "period": period
+        },
+        "chart_data": [
+            {
+                "date": str(row.date),
+                "orders": row.orders,
+                "income": float(row.income or 0)
+            } for row in chart_data
+        ]
+    }
+
+    # Check if the request wants JSON
+    if request.headers.get("accept") == "application/json":
+        return response_data
+    
+    # Otherwise return HTML template
+
     return templates.TemplateResponse(
         "pages/dashboard.html",
         {
             "request": request,
-            "current_page": "dashboard",
             "user": user,
-            "page_title": f"{user.get("user_type")} Dashboard"
+            "current_page": "dashboard",
+            **response_data
         }
-    )
-
+    )   
 # all about gmail listener and background tasks
 
 from api.dependencies.gmail.background_task_handler import GmailListener
