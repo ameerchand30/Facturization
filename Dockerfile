@@ -29,7 +29,10 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy application code
-COPY facturaization/ ./facturaization/
+# COPY facturaization/ ./facturaization/
+copy . .
 COPY alembic.ini ./
 
 EXPOSE 8000
+
+CMD ["poetry", "run", "uvicorn", "facturaization.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
