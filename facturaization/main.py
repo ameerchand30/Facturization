@@ -1,34 +1,47 @@
-from fastapi import FastAPI, Request,APIRouter
+from fastapi import FastAPI, Request,APIRouter, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 # from routers.invoice_router import invoice_router
-from api.routers.auth_router import auth_router
-from api.routers.client_router import client_router
-from api.routers.product_router import product_router
-from api.routers.enterprise_router import enterprise_router
-from api.routers.invoice_router import invoice_router
-from api.routers.report_generate import report_router
-from api.routers.dashboard_routes import dashboard_router
-from api.routers.enterprise_profile_router import enterprise_profile_router
-from api.routers.client_invoices_router import client_invoices_router
+from facturaization.api.routers.auth_router import auth_router
+from facturaization.api.routers.client_router import client_router
+from facturaization.api.routers.product_router import product_router
+from facturaization.api.routers.enterprise_router import enterprise_router
+from facturaization.api.routers.invoice_router import invoice_router
+from facturaization.api.routers.report_generate import report_router
+from facturaization.api.routers.dashboard_routes import dashboard_router
+from facturaization.api.routers.enterprise_profile_router import enterprise_profile_router
+from facturaization.api.routers.client_invoices_router import client_invoices_router
 # models
-from api.models.client import Clients
-from api.models.enterprise import Enterprise
-from api.models.product import ProductModel
-from api.models.invoice import Invoice, InvoiceItem
+""" from facturaization.api.models.client import Clients
+from facturaization.api.models.enterprise import Enterprise
+from facturaization.api.models.product import ProductModel
+from facturaization.api.models.invoice import Invoice, InvoiceItem """
 
 # database
-from database import Base, engine
+from facturaization.database import Base, engine, get_db, db_manager
 
-# Create the database tables   
-Base.metadata.create_all(bind=engine)
+
 
 
 # Create the FastAPI app
 app = FastAPI()
+
+# Initialize the database manager
+@app.on_event("startup")
+async def startup_event():
+    # This will ensure database exists and all tables are created
+    db_manager.initialize()
+
+# Use the get_db dependency in your routes
+@app.get("/test-db")
+async def test_db(db = Depends(get_db)):
+    return {"message": "Database connection successful"}
+
+# Create the database tables   
+# Base.metadata.create_all(bind=engine)
 
 # Set up CORS middleware (if needed)
 app.add_middleware(

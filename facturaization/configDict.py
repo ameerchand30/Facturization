@@ -8,6 +8,7 @@ class Setting(BaseSettings):
     database_password: str
     database_name: str
     database_username: str
+    DATABASE_URL : str
     algorithm: str
     access_token_expire_minutes: int
     # security
